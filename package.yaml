@@ -35,6 +35,7 @@ dependencies:
 - hspec
 - network-uri
 - heroku
+- zlib
 
 executables:
   pgrest-exe:

@@ -2,17 +2,16 @@
 
 module RangeQuery where
 
--- import Control.Applicative
-import Network.HTTP.Types.Header
+import           Network.HTTP.Types.Header
 
-import Data.Ranged.Boundaries
-import Data.Ranged.Ranges
+import           Data.Ranged.Boundaries
+import           Data.Ranged.Ranges
 
-import qualified Data.ByteString.Char8 as BS
-import Text.Regex.TDFA ((=~))
-import Text.Read (readMaybe)
+import qualified Data.ByteString.Char8     as BS
+import           Text.Read                 (readMaybe)
+import           Text.Regex.TDFA           ((=~))
 
-import Data.Maybe (fromMaybe, listToMaybe)
+import           Data.Maybe                (fromMaybe, listToMaybe)
 
 type NonnegRange = Range Int
 
@@ -32,9 +31,6 @@ parseRange range = do
 
   let [_, from, to] = readMaybe <$> parsedRange
 
-  -- print $ show =<< from
-  -- print $ show =<< to
-
   let lower = fromMaybe emptyRange (rangeGeq <$> from)
   let upper = fromMaybe (rangeGeq 0) (rangeLeq <$> to)
 
@@ -47,11 +43,11 @@ limit :: NonnegRange -> Maybe Int
 limit range =
   case [rangeLower range, rangeUpper range] of
     [BoundaryBelow from, BoundaryAbove to] -> Just (1 + to - from)
-    _ -> Nothing
+    _                                      -> Nothing
 
 offset :: NonnegRange -> Int
 offset range =
   case rangeLower range of
     BoundaryBelow from -> from
-    _ -> 0 -- should never happen
+    _                  -> 0 -- should never happen
 

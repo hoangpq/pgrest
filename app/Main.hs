@@ -1,36 +1,31 @@
 {-# LANGUAGE OverloadedStrings #-}
 
--- import Control.Applicative
-import Control.Exception (try)
-import qualified Data.ByteString.Char8 as BS
-import qualified Data.ByteString.Lazy as BL
--- import Text.Regex.Posix ((=~))
+import           Control.Exception         (try)
+import qualified Data.ByteString.Char8     as BS
+import qualified Data.ByteString.Lazy      as BL
 
-import Data.Ranged.Ranges (emptyRange)
--- import Network.HTTP.Types.Method
+import           Data.Ranged.Ranges        (emptyRange)
+import           Types                     (SqlRow)
 
--- import PgQuery (selectWhere)
+import           Data.Text                 (unpack)
+import           Database.HDBC.PostgreSQL  (connectPostgreSQL)
+import           Database.HDBC.Types       (SqlError, seErrorMsg)
+import           Debug.Trace
+import           Network.HTTP.Types.Header
+import           Network.HTTP.Types.Status
+import           Network.Wai
+import           Network.Wai.Handler.Warp
+import           Options.Applicative       hiding (columns)
+import           PgQuery
+import           PgStructure               (printColumns, printTables)
+import           RangeQuery
 
-import Data.Text (unpack)
-import Database.HDBC.PostgreSQL (connectPostgreSQL)
-import Database.HDBC.Types (SqlError, seErrorMsg)
-import Debug.Trace
-import Network.HTTP.Types.Header
-import Network.HTTP.Types.Status
-import Network.Wai
-import Network.Wai.Handler.Warp
-import Options.Applicative hiding (columns)
-import PgQuery
-import PgStructure (printColumns, printTables)
-import RangeQuery
--- import Text.Read (readMaybe)
--- import Text.Regex.TDFA ((=~))
-
--- import Data.Ranged.Ranges (emptyRange)
+import qualified Data.Aeson                as JSON
+import           Data.Text                 (pack, unpack)
 
 data AppConfig = AppConfig
   { configDbUri :: String,
-    configPort :: Int
+    configPort  :: Int
   }
 
 -- argument parser
@@ -56,15 +51,32 @@ argParser =
 traceThis :: (Show a) => a -> a
 traceThis x = trace (show x) x
 
+jsonContentType :: (HeaderName, BS.ByteString)
+jsonContentType = (hContentType, "application/json")
+
+jsonBodyAction :: Request -> (SqlRow -> IO Response) -> IO Response
+jsonBodyAction req handler = do
+  parse <- jsonBody req
+  case parse of
+    Left err -> return $ responseLBS status400 [jsonContentType] json
+      where json = JSON.encode . JSON.object $ [("error", JSON.String $ pack err)]
+    Right body -> handler body
+
+jsonBody :: Request -> IO (Either String SqlRow)
+jsonBody = (fmap JSON.eitherDecode) . strictRequestBody
+
 -- Simplify app with a do block
 app :: AppConfig -> Application
 app config req respond = do
+  conn <- connectPostgreSQL $ configDbUri config
   r <- try $
     case (path, verb) of
       ([], _) ->
-        responseLBS status200 [json] <$> (printTables =<< conn)
+        responseLBS status200 [jsonContentType] <$> (
+          printTables conn)
       ([table], "OPTIONS") ->
-        responseLBS status200 [json] <$> (printColumns (unpack table) =<< conn)
+        responseLBS status200 [jsonContentType] <$> (
+          printColumns (unpack table) conn)
       (["favicon.ico"], "GET") ->
         return $ responseLBS status200 [] ""
       ([table], "GET") ->
@@ -72,7 +84,10 @@ app config req respond = do
           then return $ responseLBS status416 [] "HTTP Range error"
           else
             respondWithRangedResult
-              <$> (getRows (unpack table) qq range =<< conn)
+              <$> (getRows (unpack table) qq range conn)
+      ([table], "POST") ->
+        jsonBodyAction req (\row ->
+          return $ responseLBS status200 [jsonContentType] "Post method")
       (_, _) ->
         return $ responseLBS status404 [] ""
 
@@ -81,24 +96,21 @@ app config req respond = do
     path = pathInfo req
     qq = queryString req
     verb = requestMethod req
-    json = (hContentType, "application/json")
-    conn = connectPostgreSQL $ configDbUri config
     range = requestRange (requestHeaders req)
 
 respondWithRangedResult :: RangedResult -> Response
 respondWithRangedResult rr =
-  -- responseLBS status206 [json, contentRange] (rrBody rr)
-  responseLBS
-    status206
-    [ json,
+  responseLBS status206 [
+      jsonContentType,
       ( "Content-Range",
-        "0-" <> (BS.pack . show . rrTo) rr <> "/"
-          <> (BS.pack . show . rrTotal) rr
+        if rrTotal rr == 0
+        then "*/0"
+        else (BS.pack . show . rrFrom ) rr <> "-"
+          <> (BS.pack . show . rrTo ) rr <> "/"
+          <> (BS.pack . show . rrTotal ) rr
       )
-    ]
-    (rrBody rr)
+    ] (rrBody rr)
   where
-    -- contentRange = ("Content-Range", "*/" <> (BS.pack . show . rrTotal) rr)
     json = (hContentType, "")
 
 sqlErrorHandler :: SqlError -> Response

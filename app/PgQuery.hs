@@ -2,26 +2,24 @@
 
 module PgQuery where
 
-import qualified Data.ByteString.Char8 as BS
-import qualified Data.ByteString.Lazy as BL
-import Data.Functor ((<$>))
-import Data.List (intersperse, intercalate)
-import Data.Maybe (fromMaybe)
-import Data.Monoid ((<>))
--- import qualified Data.Text as T
+import qualified Data.ByteString.Char8    as BS
+import qualified Data.ByteString.Lazy     as BL
+import           Data.Functor             ((<$>))
+import           Data.List                (intercalate, intersperse)
+import           Data.Maybe               (fromMaybe)
+import           Data.Monoid              ((<>))
 
-import Database.HDBC hiding (colNullable, colType)
-import Database.HDBC.PostgreSQL
--- import Network.HTTP.Types.URI
-import qualified Network.HTTP.Types.URI as Net
+import           Database.HDBC            hiding (colNullable, colType)
+import           Database.HDBC.PostgreSQL
+import qualified Network.HTTP.Types.URI   as Net
 
-import qualified RangeQuery as R
+import qualified RangeQuery               as R
 
 data RangedResult = RangedResult
-  { rrFrom :: Int,
-    rrTo :: Int,
+  { rrFrom  :: Int,
+    rrTo    :: Int,
     rrTotal :: Int,
-    rrBody :: BL.ByteString
+    rrBody  :: BL.ByteString
   }
 
 type QuotedSql = (String, [SqlValue])
@@ -67,13 +65,13 @@ wherePred (column, predicate) =
     opCode:rest = BS.split ':' $ fromMaybe "" predicate
     value = BS.intercalate ":" rest
     op = case opCode of
-           "eq"   -> "="
-           "gt"   -> ">"
-           "lt"   -> "<"
-           "gte"  -> ">="
-           "lte"  -> "<="
-           "neq"  -> "<>"
-           _      -> "="
+           "eq"  -> "="
+           "gt"  -> ">"
+           "lt"  -> "<"
+           "gte" -> ">="
+           "lte" -> "<="
+           "neq" -> "<>"
+           _     -> "="
 
 limitClause :: Maybe R.NonnegRange -> QuotedSql
 limitClause range =

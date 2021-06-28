@@ -2,20 +2,18 @@
 
 module PgStructure where
 
-import Data.Aeson ((.=))
-import qualified Data.Aeson as JSON
-import qualified Data.ByteString.Lazy as BL
-import Data.Functor ((<$>))
-import Data.HashMap.Strict hiding (map, mapMaybe)
-import Data.Maybe (mapMaybe)
--- import qualified Data.Text as T
-import Database.HDBC ( fromSql, toSql, quickQuery )
-import Database.HDBC.PostgreSQL
--- import Data.Text (unpack)
+import           Data.Aeson               ((.=))
+import qualified Data.Aeson               as JSON
+import qualified Data.ByteString.Lazy     as BL
+import           Data.Functor             ((<$>))
+import           Data.HashMap.Strict      hiding (map, mapMaybe)
+import           Data.Maybe               (mapMaybe)
+import           Database.HDBC            (fromSql, quickQuery, toSql)
+import           Database.HDBC.PostgreSQL
 
 data Table = Table
-  { tableSchema :: String,
-    tableName :: String,
+  { tableSchema     :: String,
+    tableName       :: String,
     tableInsertable :: Bool
   }
   deriving (Show)
@@ -34,14 +32,14 @@ toBool :: String -> Bool
 toBool = (== "YES")
 
 data Column = Column
-  { colSchema :: String,
-    colTable :: String,
-    colName :: String,
-    colPosition :: Int,
-    colNullable :: Bool,
-    colType :: String,
+  { colSchema    :: String,
+    colTable     :: String,
+    colName      :: String,
+    colPosition  :: Int,
+    colNullable  :: Bool,
+    colType      :: String,
     colUpdatable :: Bool,
-    colMaxLen :: Maybe Int,
+    colMaxLen    :: Maybe Int,
     colPrecision :: Maybe Int
   }
   deriving (Show)
@@ -109,7 +107,7 @@ columns t conn = do
 
 data TableOptions = TableOptions
   { tblOptcolumns :: HashMap String Column,
-    tblOptpkey :: [String]
+    tblOptpkey    :: [String]
   }
 
 instance JSON.ToJSON TableOptions where
