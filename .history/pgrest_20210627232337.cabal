@@ -26,7 +26,7 @@ executable pgrest-exe
     , PgQuery
     , RangeQuery
   hs-source-dirs:
-      src
+      app
   -- ghc-options: -Wall
   build-depends:
       HDBC

@@ -63,7 +63,7 @@ jsonBodyAction req handler = do
     Right body -> handler body
 
 jsonBody :: Request -> IO (Either String SqlRow)
-jsonBody = (fmap JSON.eitherDecode) . strictRequestBody
+jsonBody = fmap JSON.eitherDecode . strictRequestBody
 
 -- Simplify app with a do block
 app :: AppConfig -> Application
@@ -87,7 +87,8 @@ app config req respond = do
               <$> (getRows (unpack table) qq range conn)
       ([table], "POST") ->
         jsonBodyAction req (\row ->
-          return $ responseLBS status200 [jsonContentType] "Post method")
+          return $ responseLBS status200 [jsonContentType] 
+            (JSON.encode . JSON.object $ [("name",  JSON.String $ pack "Vampire")]))
       (_, _) ->
         return $ responseLBS status404 [] ""
 
