@@ -57,7 +57,6 @@ executable pgrest-exe
 
 test-suite pgrest-test
   type:                exitcode-stdio-1.0
-  default-language:    Haskell2010
   hs-source-dirs:      src, test
   ghc-options:         -Wall
   main-is:             Spec.hs
@@ -76,6 +75,8 @@ test-suite pgrest-test
     , text
     , unordered-containers
     , wai
+    , hspec-wai
+    , hspec-wai-json
     , http-types
     , scientific
     , time
@@ -86,4 +87,5 @@ test-suite pgrest-test
     , Ranged-sets
     , regex-posix
     , zlib
+  other-modules: Dbapi, SpecHelper
   default-language: Haskell2010

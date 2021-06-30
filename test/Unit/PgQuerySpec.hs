@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module PgQuerySpec where
+module Unit.PgQuerySpec where
 
 import           Test.Hspec
 
@@ -10,21 +10,13 @@ import           Database.HDBC.PostgreSQL
 import           PgQuery                  (insert)
 import           Types                    (SqlRow (..))
 
-loadFixture :: String -> IO Connection
-loadFixture name = do
-  sql <- readFile $ "test/fixtures/" ++ name ++ ".sql"
-  conn <- connectPostgreSQL "postgres://localhost:5432/dbapi_test"
-  runRaw conn "drop schema if exists public cascade"
-  runRaw conn "create schema public"
-  runRaw conn sql
-  commit conn
-  return conn
+import           SpecHelper
 
 main :: IO ()
 main = hspec spec
 
 spec :: Spec
-spec = beforeAll (loadFixture "schema") $ do
+spec = beforeAll (loadFixture "schema") . afterAll disconnect $ do
   describe "insert" $
     it "can insert into an empty table" $ \conn -> do
       _ <- insert "auto_incrementing_pk" (SqlRow [
