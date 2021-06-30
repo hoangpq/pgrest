@@ -12,9 +12,6 @@ import           Types                    (SqlRow (..))
 
 import           SpecHelper
 
-main :: IO ()
-main = hspec spec
-
 spec :: Spec
 spec = beforeAll (loadFixture "schema") . afterAll disconnect $ do
   describe "insert" $
