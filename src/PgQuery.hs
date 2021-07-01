@@ -14,11 +14,11 @@ import           Database.HDBC.PostgreSQL
 import qualified Network.HTTP.Types.URI   as Net
 
 import qualified RangeQuery               as R
-import Types (SqlRow, getRow)
+import           Types                    (SqlRow, getRow)
 
-import Data.Text (Text)
-import qualified Data.Aeson as JSON
-import Data.HashMap.Strict (fromList)
+import qualified Data.Aeson               as JSON
+import           Data.HashMap.Strict      (fromList)
+import           Data.Text                (Text)
 
 data RangedResult = RangedResult
   { rrFrom  :: Int,
@@ -38,15 +38,15 @@ getRows table qq range conn = do
         <> whereClause qq
         <> limitClause range)
 
+  -- to debug
   print query
-
   r <- quickQuery conn query []
 
   return $ case r of
-             [[total, limited_total, json]] ->
-               RangedResult 0 (fromSql limited_total) (fromSql total) (fromSql json)
-             _ -> RangedResult 0 0 0 ""
-
+            [[_, _, SqlNull]] -> RangedResult 0 0 0 ""
+            [[total, limited_total, json]] ->
+              RangedResult 0 (fromSql limited_total) (fromSql total) (fromSql json)
+            _ -> RangedResult 0 0 0 ""
 
   where
     schema = "public"
