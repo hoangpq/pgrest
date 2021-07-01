@@ -5,10 +5,9 @@ module Unit.PgQuerySpec where
 import           Test.Hspec
 
 import           Database.HDBC
-import           Database.HDBC.PostgreSQL
 
-import           PgQuery                  (insert)
-import           Types                    (SqlRow (..))
+import           PgQuery       (insert)
+import           Types         (SqlRow (..))
 
 import           SpecHelper
 

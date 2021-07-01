@@ -38,7 +38,6 @@ dbWithSchema action = withDatabaseConnection $ \c -> do
 dbConnectionWithRollback :: IO Connection
 dbConnectionWithRollback = withDatabaseConnection' $ \c -> do
     runRaw c "begin;"
-    rollback c
     return c
 
 appWithFixture' :: IO Application

@@ -4,9 +4,31 @@ module Feature.RangeSpec where
 
 import           SpecHelper
 
+import           Network.Wai.Test    (SResponse (..))
 import           Test.Hspec
 import           Test.Hspec.Wai
 import           Test.Hspec.Wai.JSON
+
+import           Data.Aeson          ((.:))
+import qualified Data.Aeson          as JSON
+
+import           Control.Monad       (mzero)
+import           Data.Maybe          (fromJust)
+
+data IncPK = IncPK {
+  incId          :: Int
+, incNullableStr :: Maybe String
+, incStr         :: String
+, incInsert      :: String
+}
+
+instance JSON.FromJSON IncPK where
+  parseJSON (JSON.Object r) = IncPK <$>
+    r .: "id" <*>
+    r .: "nullable_string" <*>
+    r .: "non_nullable_string" <*>
+    r .: "inserted_at"
+  parseJSON _ = mzero
 
 spec :: Spec
 spec = with appWithFixture' $ do
@@ -71,3 +93,21 @@ spec = with appWithFixture' $ do
       context "with response under server size limit" $
         it "returns whole range with status 206" $
           get "/auto_incrementing_pk" `shouldRespondWith` 206
+
+  describe "Posting new record" $
+    context "into a table with auto increment pk" $ do
+      it "does not require pk in the payload" $
+        post "/auto_incrementing_pk" [json|
+          {"non_nullable_string":"not_null"}
+        |]
+        `shouldRespondWith` 200
+
+      it "responds with the created row" $ do
+        r <- post "/auto_incrementing_pk" [json|
+          {"non_nullable_string":"not null"}
+        |]
+
+        let row = fromJust (JSON.decode $ simpleBody r :: Maybe IncPK)
+        liftIO $ do
+          incStr row `shouldBe` "not null"
+          incNullableStr row `shouldBe` Nothing

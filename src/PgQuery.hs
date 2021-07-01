@@ -37,17 +37,14 @@ getRows table qq range conn = do
       (selectStarClause schema table
         <> whereClause qq
         <> limitClause range)
-
   -- to debug
-  print query
+  -- print query
   r <- quickQuery conn query []
-
   return $ case r of
             [[_, _, SqlNull]] -> RangedResult 0 0 0 ""
             [[total, limited_total, json]] ->
               RangedResult 0 (fromSql limited_total) (fromSql total) (fromSql json)
             _ -> RangedResult 0 0 0 ""
-
   where
     schema = "public"
 
