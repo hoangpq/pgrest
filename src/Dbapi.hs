@@ -16,8 +16,7 @@ import           Debug.Trace
 import           Network.HTTP.Types.Header
 import           Network.HTTP.Types.Status
 import           Network.Wai
-import           Network.Wai.Handler.Warp
-import           Options.Applicative       hiding (columns)
+
 import           PgQuery
 import           PgStructure               (printColumns, printTables)
 import           RangeQuery
