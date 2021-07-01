@@ -10,7 +10,7 @@ import qualified Data.ByteString.Lazy      as BL
 import           Data.Ranged.Ranges        (emptyRange)
 import           Types                     (SqlRow)
 
-import           Database.HDBC.PostgreSQL  (connectPostgreSQL)
+import           Database.HDBC.PostgreSQL  (Connection)
 import           Database.HDBC.Types       (SqlError, seErrorMsg)
 import           Debug.Trace
 import           Network.HTTP.Types.Header
@@ -48,9 +48,8 @@ jsonBody :: Request -> IO (Either String SqlRow)
 jsonBody = fmap JSON.eitherDecode . strictRequestBody
 
 -- Simplify app with a do block
-app :: AppConfig -> Application
-app config req respond = do
-  conn <- connectPostgreSQL $ configDbUri config
+app :: Connection -> Application
+app conn req respond = do
   r <- try $
     case (path, verb) of
       ([], _) ->
@@ -96,8 +95,6 @@ respondWithRangedResult rr =
           <> (BS.pack . show . rrTotal ) rr
       )
     ] (rrBody rr)
-  where
-    json = (hContentType, "")
 
 sqlErrorHandler :: SqlError -> Response
 sqlErrorHandler e =

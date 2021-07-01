@@ -13,7 +13,7 @@ import           Types                    (SqlRow (..))
 import           SpecHelper
 
 spec :: Spec
-spec = beforeAll (loadFixture "schema") . afterAll disconnect $ do
+spec = around dbWithSchema $ do
   describe "insert" $
     it "can insert into an empty table" $ \conn -> do
       _ <- insert "auto_incrementing_pk" (SqlRow [
