@@ -4,7 +4,6 @@ module Feature.RangeSpec where
 
 import           SpecHelper
 
-import           Network.Wai.Test    (SResponse (..))
 import           Test.Hspec
 import           Test.Hspec.Wai
 import           Test.Hspec.Wai.JSON
@@ -13,7 +12,6 @@ import           Data.Aeson          ((.:))
 import qualified Data.Aeson          as JSON
 
 import           Control.Monad       (mzero)
-import           Data.Maybe          (fromJust)
 
 data IncPK = IncPK {
   incId          :: Int
@@ -100,14 +98,11 @@ spec = with appWithFixture' $ do
         post "/auto_incrementing_pk" [json|
           {"non_nullable_string":"not_null"}
         |]
-        `shouldRespondWith` 200
+        `shouldRespondWith` 201
 
-      it "responds with the created row" $ do
-        r <- post "/auto_incrementing_pk" [json|
-          {"non_nullable_string":"not null"}
-        |]
-
-        let row = fromJust (JSON.decode $ simpleBody r :: Maybe IncPK)
-        liftIO $ do
-          incStr row `shouldBe` "not null"
-          incNullableStr row `shouldBe` Nothing
+      it "links tothe created resource" $
+        post "/auto_incrementing_pk" [json|
+          {"non_nullable_string":"not null"} |]
+          `shouldRespondWith` 201 {
+            matchHeaders = ["Location" <:> "/auto_incrementing_pk?id=eq.3"]
+          }

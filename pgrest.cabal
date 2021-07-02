@@ -18,6 +18,31 @@ source-repository head
   type: git
   location: https://github.com/githubuser/pgrest
 
+library
+  build-depends:       
+      base >=4.6 && <5
+      , HDBC, HDBC-postgresql
+      , warp, wai
+      , http-types, scientific, time
+      , HTTP, convertible
+      , bytestring, aeson, network
+      , text, optparse-applicative
+      , unordered-containers
+      , containers
+      , regex-base
+      , http-media, regex-tdfa
+      , Ranged-sets
+      , transformers
+  exposed-modules:     
+      Dbapi
+      , PgStructure
+      , PgQuery
+      , RangeQuery
+  other-extensions:    
+      OverloadedStrings
+  hs-source-dirs:      
+      src
+
 executable pgrest-exe
   main-is: Main.hs
   other-modules:
@@ -38,6 +63,8 @@ executable pgrest-exe
     , network
     , network-uri
     , optparse-applicative
+    , convertible, HTTP
+    , containers
     , text
     , unordered-containers
     , wai
@@ -69,6 +96,8 @@ test-suite pgrest-test
     , network
     , network-uri
     , optparse-applicative
+    , convertible, HTTP
+    , containers
     , text
     , unordered-containers
     , wai

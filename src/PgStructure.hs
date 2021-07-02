@@ -112,10 +112,9 @@ data TableOptions = TableOptions
 
 instance JSON.ToJSON TableOptions where
   toJSON t =
-    JSON.object
-      [ "columns" .= tblOptcolumns t,
-        "pkey" .= tblOptpkey t
-      ]
+    JSON.object [
+      "columns" .= tblOptcolumns t
+    , "pkey"    .= tblOptpkey t ]
 
 -- named column hash
 namedColumnHash :: [Column] -> HashMap String Column

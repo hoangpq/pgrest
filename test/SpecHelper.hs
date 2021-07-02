@@ -40,5 +40,12 @@ dbConnectionWithRollback = withDatabaseConnection' $ \c -> do
     runRaw c "begin;"
     return c
 
+appWithFixture :: ActionWith Application -> IO ()
+appWithFixture action = withDatabaseConnection $ \c -> do
+    runRaw  c "begin;"
+    action $ app c
+    rollback c
+
+
 appWithFixture' :: IO Application
 appWithFixture' = app <$> dbConnectionWithRollback

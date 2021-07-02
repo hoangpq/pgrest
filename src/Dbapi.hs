@@ -7,8 +7,11 @@ import           Control.Exception         (try)
 import qualified Data.ByteString.Char8     as BS
 import qualified Data.ByteString.Lazy      as BL
 
+import           Data.Map                  (fromList, intersection, toList)
 import           Data.Ranged.Ranges        (emptyRange)
 import           Types                     (SqlRow)
+
+import           Database.HDBC.SqlValue    (SqlValue (..))
 
 import           Database.HDBC.PostgreSQL  (Connection)
 import           Database.HDBC.Types       (SqlError, seErrorMsg)
@@ -18,11 +21,16 @@ import           Network.HTTP.Types.Status
 import           Network.Wai
 
 import           PgQuery
-import           PgStructure               (printColumns, printTables)
+import           PgStructure               (primaryKeyColumns, printColumns,
+                                            printTables)
 import           RangeQuery
 
 import qualified Data.Aeson                as JSON
 import           Data.Text                 (pack, unpack)
+
+import           Data.Convertible.Base     (convert)
+import           Data.Text.Encoding        (encodeUtf8)
+import           Network.HTTP.Base         (urlEncodeVars)
 
 data AppConfig = AppConfig
   { configDbUri :: String,
@@ -68,9 +76,18 @@ app conn req respond = do
             respondWithRangedResult <$> getRows (unpack table) qq range conn
 
       ([table], "POST") ->
-        jsonBodyAction req (\row ->
-          responseLBS status200 [jsonContentType] <$>
-            insert table row conn)
+        jsonBodyAction req (\row -> do
+          allvals <- insert table row conn
+          keys <- primaryKeyColumns schema (unpack table) conn
+
+          let keyvals = allvals `intersection`  fromList (zip keys $ repeat SqlNull)
+          let params = urlEncodeVars $ map (\t -> (fst t, "eq." <> convert (snd t) :: String)) $ toList keyvals
+
+          return $ responseLBS status201
+            [ jsonContentType
+            , (hLocation, "/" <> encodeUtf8 table <> "?" <> BS.pack params)
+            ] ""
+        )
 
       (_, _) ->
         return $ responseLBS status404 [] ""
@@ -81,6 +98,7 @@ app conn req respond = do
     qq = queryString req
     verb = requestMethod req
     range = requestRange (requestHeaders req)
+    schema = "public"
 
 respondWithRangedResult :: RangedResult -> Response
 respondWithRangedResult rr =
