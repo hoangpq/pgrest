@@ -4,9 +4,9 @@ version:        1.0.0.0
 description:    Please see the README on GitHub at <https://github.com/githubuser/pgrest#readme>
 homepage:       https://github.com/githubuser/pgrest#readme
 bug-reports:    https://github.com/githubuser/pgrest/issues
-author:         Author name here
+author:         Hoang Phan
 maintainer:     example@example.com
-copyright:      2020 Author name here
+copyright:      2020 hoangpq
 license:        BSD-3-Clause
 license-file:   LICENSE
 build-type:     Simple
