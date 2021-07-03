@@ -28,10 +28,6 @@ jobs:
         ghc-version: ${{ matrix.ghc }}
         cabal-version: ${{ matrix.cabal }}
 
-    - name: Configure
-      run: |
-        cabal configure --enable-tests --enable-benchmarks --test-show-details=direct
-
     - name: Freeze
       run: |
         cabal freeze
