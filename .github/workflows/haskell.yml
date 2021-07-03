@@ -15,6 +15,7 @@ jobs:
         cabal: ["3.4.0.0"]
         ghc: ["8.10.4"]
     env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       CONFIG: "--enable-tests --enable-benchmarks"
     steps:
       - uses: actions/checkout@v2
