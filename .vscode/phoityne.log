@@ -1,0 +1,80 @@
+2021-07-04 18:04:26.789367000000 [34016(ThreadId 13)] ERROR APP - user error (<getModule> loaded module can not find from path. </Users/hoangpq/contribute/pgrest/Main.hs> [("Main","/Users/hoangpq/contribute/pgrest/src/Main.hs")])
+2021-07-04 18:04:26.910526000000 [34016(ThreadId 13)] ERROR APP - start debugging failed. user error (ExecResult not found.) : Left "user error (ExecResult not found.)"
+2021-07-04 18:09:59.380211000000 [36059(ThreadId 13)] ERROR APP - user error (<getModule> loaded module can not find from path. </Users/hoangpq/contribute/pgrest/Main.hs> [("Main","/Users/hoangpq/contribute/pgrest/src/Main.hs")])
+2021-07-04 18:09:59.484887000000 [36059(ThreadId 13)] ERROR APP - start debugging failed. user error (ExecResult not found.) : Left "user error (ExecResult not found.)"
+2021-07-04 18:18:50.849597000000 [36821(ThreadId 13)] ERROR APP - [CRITICAL] can not get the initial ghci prompt.
+2021-07-04 18:19:16.878376000000 [36876(ThreadId 13)] ERROR APP - user error (<getModule> loaded module can not find from path. </Users/hoangpq/contribute/pgrest/Main.hs> [("Main","/Users/hoangpq/contribute/pgrest/src/Main.hs")])
+2021-07-04 18:19:16.981561000000 [36876(ThreadId 13)] ERROR APP - start debugging failed. user error (ExecResult not found.) : Left "user error (ExecResult not found.)"
+2021-07-04 18:23:04.069965000000 [37222(ThreadId 13)] ERROR APP - [CRITICAL] can not get the initial ghci prompt.
+2021-07-04 18:23:52.285749000000 [37328(ThreadId 13)] ERROR APP - [CRITICAL] can not get the initial ghci prompt.
+2021-07-04 18:24:17.663161000000 [37386(ThreadId 13)] ERROR APP - user error (<getModule> loaded module can not find from path. </Users/hoangpq/contribute/pgrest/Main.hs> [("Main","/Users/hoangpq/contribute/pgrest/src/Main.hs")])
+2021-07-04 18:24:17.776970000000 [37386(ThreadId 13)] ERROR APP - start debugging failed. user error (ExecResult not found.) : Left "user error (ExecResult not found.)"
+2021-07-04 18:24:54.941725000000 [37459(ThreadId 13)] ERROR APP - user error (<getModule> loaded module can not find from path. </Users/hoangpq/contribute/pgrest/Main.hs> [("Main","/Users/hoangpq/contribute/pgrest/src/Main.hs")])
+2021-07-04 18:24:55.040559000000 [37459(ThreadId 13)] ERROR APP - start debugging failed. user error (ExecResult not found.) : Left "user error (ExecResult not found.)"
+2021-07-04 18:25:18.202797000000 [37519(ThreadId 13)] ERROR APP - user error (<getModule> loaded module can not find from path. </Users/hoangpq/contribute/pgrest/Main.hs> [("Main","/Users/hoangpq/contribute/pgrest/src/Main.hs")])
+2021-07-04 18:25:18.303213000000 [37519(ThreadId 13)] ERROR APP - start debugging failed. user error (ExecResult not found.) : Left "user error (ExecResult not found.)"
+2021-07-04 18:28:35.467183000000 [37793(ThreadId 13)] ERROR APP - user error (<getModule> loaded module can not find from path. </Users/hoangpq/contribute/pgrest/Main.hs> [("Dbapi","/Users/hoangpq/contribute/pgrest/src/Dbapi.hs"),("Main","/Users/hoangpq/contribute/pgrest/src/Main.hs"),("PgQuery","/Users/hoangpq/contribute/pgrest/src/PgQuery.hs"),("PgStructure","/Users/hoangpq/contribute/pgrest/src/PgStructure.hs"),("RangeQuery","/Users/hoangpq/contribute/pgrest/src/RangeQuery.hs"),("Types","/Users/hoangpq/contribute/pgrest/src/Types.hs")])
+2021-07-04 18:28:42.009242000000 [37793(ThreadId 13)] ERROR APP - invalid dap result from ghci. []
+2021-07-04 18:28:47.338480000000 [37793(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:28:48.849106000000 [37793(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:28:49.399359000000 [37793(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:28:53.110864000000 [37793(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:28:53.733614000000 [37793(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:28:53.960796000000 [37793(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:28:56.906958000000 [37793(ThreadId 13)] CRITICAL APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:29:02.339906000000 [37856(ThreadId 13)] ERROR APP - user error (<getModule> loaded module can not find from path. </Users/hoangpq/contribute/pgrest/Main.hs> [("Dbapi","/Users/hoangpq/contribute/pgrest/src/Dbapi.hs"),("Main","/Users/hoangpq/contribute/pgrest/src/Main.hs"),("PgQuery","/Users/hoangpq/contribute/pgrest/src/PgQuery.hs"),("PgStructure","/Users/hoangpq/contribute/pgrest/src/PgStructure.hs"),("RangeQuery","/Users/hoangpq/contribute/pgrest/src/RangeQuery.hs"),("Types","/Users/hoangpq/contribute/pgrest/src/Types.hs")])
+2021-07-04 18:29:07.799146000000 [37856(ThreadId 13)] ERROR APP - invalid dap result from ghci. []
+2021-07-04 18:29:10.614172000000 [37856(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:29:11.780308000000 [37856(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:29:37.814866000000 [37856(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:29:40.065572000000 [37856(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:29:40.474737000000 [37856(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:29:40.661328000000 [37856(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:29:41.201675000000 [37856(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:29:41.505665000000 [37856(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:29:42.389908000000 [37856(ThreadId 13)] CRITICAL APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:29:52.229786000000 [37943(ThreadId 13)] ERROR APP - user error (<getModule> loaded module can not find from path. </Users/hoangpq/contribute/pgrest/Main.hs> [("Dbapi","/Users/hoangpq/contribute/pgrest/src/Dbapi.hs"),("Main","/Users/hoangpq/contribute/pgrest/src/Main.hs"),("PgQuery","/Users/hoangpq/contribute/pgrest/src/PgQuery.hs"),("PgStructure","/Users/hoangpq/contribute/pgrest/src/PgStructure.hs"),("RangeQuery","/Users/hoangpq/contribute/pgrest/src/RangeQuery.hs"),("Types","/Users/hoangpq/contribute/pgrest/src/Types.hs")])
+2021-07-04 18:30:00.749274000000 [37943(ThreadId 13)] ERROR APP - invalid dap result from ghci. []
+2021-07-04 18:30:00.749991000000 [37943(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:30:12.250028000000 [37943(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:30:12.959123000000 [37943(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:30:14.222205000000 [37943(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:30:15.535935000000 [37943(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:30:16.524927000000 [37943(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:30:17.027253000000 [37943(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:30:18.176386000000 [37943(ThreadId 13)] CRITICAL APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:30:26.892263000000 [38013(ThreadId 13)] ERROR APP - user error (<getModule> loaded module can not find from path. </Users/hoangpq/contribute/pgrest/Main.hs> [("Dbapi","/Users/hoangpq/contribute/pgrest/src/Dbapi.hs"),("Main","/Users/hoangpq/contribute/pgrest/src/Main.hs"),("PgQuery","/Users/hoangpq/contribute/pgrest/src/PgQuery.hs"),("PgStructure","/Users/hoangpq/contribute/pgrest/src/PgStructure.hs"),("RangeQuery","/Users/hoangpq/contribute/pgrest/src/RangeQuery.hs"),("Types","/Users/hoangpq/contribute/pgrest/src/Types.hs")])
+2021-07-04 18:30:31.179404000000 [38013(ThreadId 13)] CRITICAL APP - invalid dap result from ghci. []
+2021-07-04 18:38:11.828594000000 [38637(ThreadId 13)] ERROR APP - user error (<getModule> loaded module can not find from path. </Users/hoangpq/contribute/pgrest/Main.hs> [("Dbapi","/Users/hoangpq/contribute/pgrest/src/Dbapi.hs"),("Main","/Users/hoangpq/contribute/pgrest/src/Main.hs"),("PgQuery","/Users/hoangpq/contribute/pgrest/src/PgQuery.hs"),("PgStructure","/Users/hoangpq/contribute/pgrest/src/PgStructure.hs"),("RangeQuery","/Users/hoangpq/contribute/pgrest/src/RangeQuery.hs"),("Types","/Users/hoangpq/contribute/pgrest/src/Types.hs")])
+2021-07-04 18:38:18.915458000000 [38637(ThreadId 13)] CRITICAL APP - invalid dap result from ghci. []
+2021-07-04 18:38:23.575344000000 [38674(ThreadId 13)] ERROR APP - user error (<getModule> loaded module can not find from path. </Users/hoangpq/contribute/pgrest/Main.hs> [("Dbapi","/Users/hoangpq/contribute/pgrest/src/Dbapi.hs"),("Main","/Users/hoangpq/contribute/pgrest/src/Main.hs"),("PgQuery","/Users/hoangpq/contribute/pgrest/src/PgQuery.hs"),("PgStructure","/Users/hoangpq/contribute/pgrest/src/PgStructure.hs"),("RangeQuery","/Users/hoangpq/contribute/pgrest/src/RangeQuery.hs"),("Types","/Users/hoangpq/contribute/pgrest/src/Types.hs")])
+2021-07-04 18:38:26.822462000000 [38674(ThreadId 13)] ERROR APP - invalid dap result from ghci. []
+2021-07-04 18:38:37.553449000000 [38674(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:38:51.686573000000 [38674(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:38:53.665310000000 [38674(ThreadId 13)] CRITICAL APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:39:07.842785000000 [38758(ThreadId 13)] ERROR APP - user error (<getModule> loaded module can not find from path. </Users/hoangpq/contribute/pgrest/Main.hs> [("Dbapi","/Users/hoangpq/contribute/pgrest/src/Dbapi.hs"),("Main","/Users/hoangpq/contribute/pgrest/src/Main.hs"),("PgQuery","/Users/hoangpq/contribute/pgrest/src/PgQuery.hs"),("PgStructure","/Users/hoangpq/contribute/pgrest/src/PgStructure.hs"),("RangeQuery","/Users/hoangpq/contribute/pgrest/src/RangeQuery.hs"),("Types","/Users/hoangpq/contribute/pgrest/src/Types.hs")])
+2021-07-04 18:39:21.535854000000 [38758(ThreadId 13)] CRITICAL APP - invalid dap result from ghci. ["Listening on port 3333"]
+2021-07-04 18:39:33.099840000000 [38818(ThreadId 13)] ERROR APP - user error (<getModule> loaded module can not find from path. </Users/hoangpq/contribute/pgrest/Main.hs> [("Dbapi","/Users/hoangpq/contribute/pgrest/src/Dbapi.hs"),("Main","/Users/hoangpq/contribute/pgrest/src/Main.hs"),("PgQuery","/Users/hoangpq/contribute/pgrest/src/PgQuery.hs"),("PgStructure","/Users/hoangpq/contribute/pgrest/src/PgStructure.hs"),("RangeQuery","/Users/hoangpq/contribute/pgrest/src/RangeQuery.hs"),("Types","/Users/hoangpq/contribute/pgrest/src/Types.hs")])
+2021-07-04 18:39:35.663878000000 [38818(ThreadId 13)] CRITICAL APP - invalid dap result from ghci. ["Listening on port 3333"]
+2021-07-04 18:39:56.918668000000 [38872(ThreadId 13)] ERROR APP - user error (<getModule> loaded module can not find from path. </Users/hoangpq/contribute/pgrest/Main.hs> [("Dbapi","/Users/hoangpq/contribute/pgrest/src/Dbapi.hs"),("Main","/Users/hoangpq/contribute/pgrest/src/Main.hs"),("PgQuery","/Users/hoangpq/contribute/pgrest/src/PgQuery.hs"),("PgStructure","/Users/hoangpq/contribute/pgrest/src/PgStructure.hs"),("RangeQuery","/Users/hoangpq/contribute/pgrest/src/RangeQuery.hs"),("Types","/Users/hoangpq/contribute/pgrest/src/Types.hs")])
+2021-07-04 18:39:57.685211000000 [38872(ThreadId 13)] CRITICAL APP - invalid dap result from ghci. ["Listening on port 3333"]
+2021-07-04 18:40:02.708703000000 [38892(ThreadId 13)] ERROR APP - user error (<getModule> loaded module can not find from path. </Users/hoangpq/contribute/pgrest/Main.hs> [("Dbapi","/Users/hoangpq/contribute/pgrest/src/Dbapi.hs"),("Main","/Users/hoangpq/contribute/pgrest/src/Main.hs"),("PgQuery","/Users/hoangpq/contribute/pgrest/src/PgQuery.hs"),("PgStructure","/Users/hoangpq/contribute/pgrest/src/PgStructure.hs"),("RangeQuery","/Users/hoangpq/contribute/pgrest/src/RangeQuery.hs"),("Types","/Users/hoangpq/contribute/pgrest/src/Types.hs")])
+2021-07-04 18:40:14.140524000000 [38892(ThreadId 13)] CRITICAL APP - invalid dap result from ghci. ["Listening on port 3333"]
+2021-07-04 18:50:08.845136000000 [39758(ThreadId 13)] ERROR APP - user error (<getModule> loaded module can not find from path. </Users/hoangpq/contribute/pgrest/Main.hs> [("Dbapi","/Users/hoangpq/contribute/pgrest/src/Dbapi.hs"),("Main","/Users/hoangpq/contribute/pgrest/src/Main.hs"),("PgQuery","/Users/hoangpq/contribute/pgrest/src/PgQuery.hs"),("PgStructure","/Users/hoangpq/contribute/pgrest/src/PgStructure.hs"),("RangeQuery","/Users/hoangpq/contribute/pgrest/src/RangeQuery.hs"),("Types","/Users/hoangpq/contribute/pgrest/src/Types.hs")])
+2021-07-04 18:50:47.417077000000 [39758(ThreadId 13)] CRITICAL APP - invalid dap result from ghci. ["Listening on port 3333"]
+2021-07-04 18:52:47.139577000000 [40343(ThreadId 13)] ERROR APP - [CRITICAL] can not get the initial ghci prompt.
+2021-07-04 18:53:22.177294000000 [40396(ThreadId 13)] CRITICAL APP - invalid dap result from ghci. ["Listening on port 3333"]
+2021-07-04 18:53:44.320433000000 [40455(ThreadId 13)] ERROR APP - invalid dap result from ghci. []
+2021-07-04 18:53:58.045679000000 [40455(ThreadId 13)] CRITICAL APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:54:48.901828000000 [40612(ThreadId 13)] ERROR APP - invalid dap result from ghci. []
+2021-07-04 18:54:50.523979000000 [40612(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:54:57.026492000000 [40612(ThreadId 13)] CRITICAL APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:55:14.676068000000 [40674(ThreadId 13)] CRITICAL APP - invalid dap result from ghci. ["Listening on port 3333"]
+2021-07-04 18:56:01.286018000000 [40780(ThreadId 13)] ERROR APP - invalid dap result from ghci. []
+2021-07-04 18:56:14.944506000000 [40780(ThreadId 13)] ERROR APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:56:16.408019000000 [40780(ThreadId 13)] CRITICAL APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:56:25.908546000000 [40839(ThreadId 13)] CRITICAL APP - invalid dap result from ghci. ["Listening on port 3333"]
+2021-07-04 18:56:38.235214000000 [40877(ThreadId 13)] CRITICAL APP - invalid dap result from ghci. ["Listening on port 3333"]
+2021-07-04 18:56:56.600593000000 [40915(ThreadId 13)] CRITICAL APP - <file descriptor: 49>: hPutChar: resource vanished (Broken pipe)
+2021-07-04 18:57:27.490139000000 [40991(ThreadId 13)] CRITICAL APP - invalid dap result from ghci. ["Listening on port 3333"]
+2021-07-04 19:00:58.839744000000 [41299(ThreadId 12)] CRITICAL REQUEST - invalid HANDLE. eof.

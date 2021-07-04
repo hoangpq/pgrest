@@ -2,5 +2,5 @@
 
 curl --header "Content-Type: application/json" \
   --request POST \
-  --data '{"login":"vampire@gmail.com","company_id":1}' \
+  --data '{"login":"vampire@gmail.com","company_id":1,"partner_id":1}' \
   http://localhost:3333/res_users

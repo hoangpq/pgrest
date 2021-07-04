@@ -9,7 +9,18 @@ import           Test.Hspec.Wai
 import           Test.Hspec.Wai.JSON
 
 spec :: Spec
-spec = with appWithFixture' $
+spec = with appWithFixture' $ do
+
+  describe "GET /" $
+    it "lists view in schema" $
+      get "/" `shouldRespondWith`
+        [json| [
+          {"schema":"public","name":"auto_incrementing_pk","insertable":true}
+        , {"schema":"public","name":"compound_pk","insertable":true}
+        , {"schema":"public","name":"simple_pk","insertable":true}
+        ] |]
+        {matchStatus = 200}
+
   describe "Table info" $
     it "is available with OPTIONS verb" $
       -- {{{ big json object

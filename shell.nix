@@ -2,7 +2,8 @@ let
   pkgs = import <nixpkgs> { };
   pgrest = pkgs.haskellPackages.callPackage ./default.nix { };
   hsTools = with pkgs.haskellPackages; [
-    cabal-install hpack
+    cabal-install hpack 
+    haskell-dap ghci-dap haskell-debug-adapter phoityne-vscode 
     hlint
   ];
 in
