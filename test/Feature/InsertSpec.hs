@@ -12,24 +12,11 @@ import           Test.Hspec.Wai.JSON
 import qualified Data.Aeson                as JSON
 import           Data.Maybe                (fromJust)
 
-import qualified Data.ByteString.Char8     as BS
-import qualified Data.HashMap.Strict       as Map
-
-import           Data.CaseInsensitive
-import           Text.Regex.TDFA           ((=~))
 
 import           Network.HTTP.Types.Header
 import           Network.HTTP.Types.Status
 
 import           TestTypes                 (IncPK, incNullableStr, incStr)
-
-getHeader :: CI BS.ByteString -> [Header] -> Maybe BS.ByteString
-getHeader name headers =
-  Map.lookup name $ Map.fromList headers
-
-matchHeader :: CI BS.ByteString -> String -> [Header] -> Bool
-matchHeader name valRegex headers =
-  maybe False (=~ valRegex) $ getHeader name headers
 
 spec :: Spec
 spec = with appWithFixture' $

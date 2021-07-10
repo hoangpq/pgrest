@@ -11,8 +11,12 @@ import           Control.Exception.Base    (bracket)
 import           Dbapi                     (AppConfig (..), app)
 
 import qualified Data.ByteString.Char8     as BS
-import           Data.CaseInsensitive      (CI (..))
 import           Network.HTTP.Types.Header
+
+import qualified Data.HashMap.Strict       as Map
+
+import           Data.CaseInsensitive
+import           Text.Regex.TDFA           ((=~))
 
 cfg :: AppConfig
 cfg = AppConfig "postgres://postgres:@localhost:5432/dbapi_test" 9000
@@ -58,3 +62,11 @@ rangerHdrs r = [rangeUnit, (hRange, renderByteRange r)]
 
 rangeUnit :: Header
 rangeUnit = ("Range-Unit" :: CI BS.ByteString, "items")
+
+getHeader :: CI BS.ByteString -> [Header] -> Maybe BS.ByteString
+getHeader name headers =
+  Map.lookup name $ Map.fromList headers
+
+matchHeader :: CI BS.ByteString -> String -> [Header] -> Bool
+matchHeader name valRegex headers =
+  maybe False (=~ valRegex) $ getHeader name headers
