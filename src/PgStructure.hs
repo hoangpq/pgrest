@@ -135,7 +135,6 @@ printColumns table conn =
 
 primaryKeyColumns :: String -> String -> Connection -> IO [String]
 primaryKeyColumns s t conn = do
-  print query
   r <-
     quickQuery
       conn

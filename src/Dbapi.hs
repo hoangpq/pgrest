@@ -92,8 +92,7 @@ app conn req respond = do
       (_, _) ->
         return $ responseLBS status404 [] ""
 
-  print $ show $ lookup hRange (requestHeaders req)
-
+  -- print $ show $ lookup hRange (requestHeaders req)
   respond $ either sqlErrorHandler id r
   where
     path = pathInfo req

@@ -36,6 +36,8 @@ getRows table qq range conn = do
         <> whereClause qq
         <> limitClause range)
 
+  print $ "[INFO]: Query" <> query
+
   r <- quickQuery conn query []
   return $ case r of
             [[total, _, SqlNull]] -> RangedResult offset 0 (fromSql total) ""
