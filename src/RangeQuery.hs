@@ -11,8 +11,6 @@ import qualified Data.ByteString.Char8     as BS
 import           Text.Read                 (readMaybe)
 import           Text.Regex.TDFA           ((=~))
 
-import           Data.Maybe                (fromMaybe, listToMaybe)
-
 type NonnegRange = Range Int
 
 rangeGeq :: Int -> NonnegRange
@@ -31,13 +29,13 @@ parseRange range = do
 
   let [_, from, to] = readMaybe <$> parsedRange
 
-  let lower = fromMaybe emptyRange (rangeGeq <$> from)
-  let upper = fromMaybe (rangeGeq 0) (rangeLeq <$> to)
+  let lower = maybe emptyRange rangeGeq from
+  let upper = maybe (rangeGeq 0) rangeLeq to
 
   return $ rangeIntersection lower upper
 
 requestRange :: RequestHeaders -> Maybe (Range Int)
-requestRange hdrs = parseRange =<< BS.unpack <$> lookup hRange hdrs
+requestRange hdrs = parseRange . BS.unpack =<< lookup hRange hdrs
 
 limit :: NonnegRange -> Maybe Int
 limit range =
