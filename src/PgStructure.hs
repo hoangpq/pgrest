@@ -154,4 +154,5 @@ primaryKeyColumns s t conn = do
       \  and kc.table_schema = tc.table_schema \
       \  and kc.constraint_name = tc.constraint_name \
       \  and kc.table_schema = ? \
-      \  and kc.table_name = ? "
+      \  and kc.table_name = ? \
+      \ order by kc.table_name"
