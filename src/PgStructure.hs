@@ -141,6 +141,8 @@ primaryKeyColumns s t conn = do
       query
       [toSql s, toSql t]
 
+  print $ "[DEBUG] lookup table schema" <> query
+
   return $ map fromSql (concat r)
   where
     query =

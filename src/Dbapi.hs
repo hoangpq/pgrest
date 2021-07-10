@@ -77,10 +77,19 @@ app conn req respond = do
 
       ([table], "POST") ->
         jsonBodyAction req (\row -> do
+          print row
+
           allvals <- insert table row conn
           keys <- primaryKeyColumns schema (unpack table) conn
 
-          let keyvals = allvals `intersection`  fromList (zip keys $ repeat SqlNull)
+          let keyvals = if null keys
+                        then allvals
+                        else allvals `intersection` fromList (zip keys $ repeat SqlNull)
+
+          -- print allvals
+          -- print $ fromList$ zip keys (repeat SqlNull)
+          -- print keyvals
+
           let params = urlEncodeVars $ map (\t -> (fst t, "eq." <> convert (snd t) :: String)) $ toList keyvals
 
           return $ responseLBS status201
