@@ -30,7 +30,6 @@ parseRange range = do
   parsedRange <- listToMaybe (range =~ rangeRegex :: [[String]])
 
   let [_, from, to] = readMaybe <$> parsedRange
-
   let lower = maybe emptyRange rangeGeq from
   let upper = maybe (rangeGeq 0) rangeLeq to
 

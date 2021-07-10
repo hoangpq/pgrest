@@ -92,6 +92,8 @@ app conn req respond = do
       (_, _) ->
         return $ responseLBS status404 [] ""
 
+  print $ show $ lookup hRange (requestHeaders req)
+
   respond $ either sqlErrorHandler id r
   where
     path = pathInfo req
@@ -105,10 +107,10 @@ respondWithRangedResult rr =
   responseLBS status [
       jsonContentType,
       ( "Content-Range",
-        if total == 0
-        then "*/0"
+        if total == 0 || from > total
+        then "*/" <> BS.pack (show total)
         else BS.pack (show from) <> "-"
-          <> BS.pack (show to ) <> "/"
+          <> BS.pack (show to) <> "/"
           <> BS.pack (show total)
       )
     ] (rrBody rr)
@@ -117,7 +119,11 @@ respondWithRangedResult rr =
       from = rrFrom rr
       to = rrTo rr
       total = rrTotal rr
-      status = if (1 + to - from) < total then status206 else status200
+      status
+        | from > total = status416
+        | total == 0 = status204
+        | (1 + to - from) < total = status206
+        | otherwise = status200
 
 sqlErrorHandler :: SqlError -> Response
 sqlErrorHandler e =

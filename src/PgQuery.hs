@@ -23,7 +23,7 @@ data RangedResult = RangedResult
     rrTo    :: Int,
     rrTotal :: Int,
     rrBody  :: BL.ByteString
-  }
+  } deriving Show
 
 type QuotedSql = (String, [SqlValue])
 
@@ -36,16 +36,16 @@ getRows table qq range conn = do
         <> whereClause qq
         <> limitClause range)
 
-  -- to debug
-  -- print query
   r <- quickQuery conn query []
   return $ case r of
-            [[_, _, SqlNull]] -> RangedResult 0 0 0 ""
+            [[total, _, SqlNull]] -> RangedResult offset 0 (fromSql total) ""
             [[total, limited_total, json]] ->
-              RangedResult 0 (fromSql limited_total) (fromSql total) (fromSql json)
+              RangedResult offset (offset + fromSql limited_total - 1)
+                           (fromSql total) (fromSql json)
             _ -> RangedResult 0 0 0 ""
   where
     schema = "public"
+    offset = maybe 0 R.offset range
 
 globalAndLimitedCounts :: String -> String -> QuotedSql
 globalAndLimitedCounts schema table =

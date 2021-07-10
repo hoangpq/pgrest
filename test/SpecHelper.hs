@@ -57,8 +57,8 @@ appWithFixture action = withDatabaseConnection $ \c -> do
 appWithFixture' :: IO Application
 appWithFixture' = app <$> dbConnectionWithRollback
 
-rangerHdrs :: ByteRange -> [Header]
-rangerHdrs r = [rangeUnit, (hRange, renderByteRange r)]
+rangeHdrs :: ByteRange -> [Header]
+rangeHdrs r = [rangeUnit, (hRange, renderByteRange r)]
 
 rangeUnit :: Header
 rangeUnit = ("Range-Unit" :: CI BS.ByteString, "items")
