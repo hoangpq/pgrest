@@ -64,7 +64,8 @@ tables s conn = do
       "select table_schema, table_name,\
       \      is_insertable_into\
       \ from information_schema.tables\
-      \ where table_schema = ?"
+      \ where table_schema = ?\
+      \ order by table_name"
       [toSql s]
   return $ mapMaybe mkTable r
   where

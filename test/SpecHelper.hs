@@ -1,4 +1,4 @@
-
+{-# LANGUAGE OverloadedStrings #-}
 module SpecHelper where
 
 import           Network.Wai
@@ -7,8 +7,12 @@ import           Test.Hspec
 import           Database.HDBC
 import           Database.HDBC.PostgreSQL
 
-import           Control.Exception.Base   (bracket)
-import           Dbapi                    (AppConfig (..), app)
+import           Control.Exception.Base    (bracket)
+import           Dbapi                     (AppConfig (..), app)
+
+import qualified Data.ByteString.Char8     as BS
+import           Data.CaseInsensitive      (CI (..))
+import           Network.HTTP.Types.Header
 
 cfg :: AppConfig
 cfg = AppConfig "postgres://postgres:@localhost:5432/dbapi_test" 9000
@@ -46,6 +50,11 @@ appWithFixture action = withDatabaseConnection $ \c -> do
     action $ app c
     rollback c
 
-
 appWithFixture' :: IO Application
 appWithFixture' = app <$> dbConnectionWithRollback
+
+rangerHdrs :: ByteRange -> [Header]
+rangerHdrs r = [rangeUnit, (hRange, renderByteRange r)]
+
+rangeUnit :: Header
+rangeUnit = ("Range-Unit" :: CI BS.ByteString, "items")
