@@ -11,6 +11,8 @@ import qualified Data.ByteString.Char8     as BS
 import           Text.Read                 (readMaybe)
 import           Text.Regex.TDFA           ((=~))
 
+import           Data.Maybe                (listToMaybe)
+
 type NonnegRange = Range Int
 
 rangeGeq :: Int -> NonnegRange
