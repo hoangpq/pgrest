@@ -1,10 +1,10 @@
 name:                pgrest
 version:             0.1.0.0
-github:              "githubuser/pgrest"
+github:              "pgrest"
 license:             BSD3
 author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2020 Author name here"
+maintainer:          "hoang.phan@gmail.com"
+copyright:           "2020 Hoang Phan"
 
 extra-source-files:
 - README.md

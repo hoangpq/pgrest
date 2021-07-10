@@ -5,7 +5,6 @@ module PgStructure where
 import           Data.Aeson               ((.=))
 import qualified Data.Aeson               as JSON
 import qualified Data.ByteString.Lazy     as BL
-import           Data.Functor             ((<$>))
 import           Data.HashMap.Strict      hiding (map, mapMaybe)
 import           Data.Maybe               (mapMaybe)
 import           Database.HDBC            (fromSql, quickQuery, toSql)
@@ -86,7 +85,8 @@ columns t conn = do
       \       is_nullable, data_type, is_updatable,\
       \       character_maximum_length, numeric_precision\
       \ from information_schema.columns\
-      \ where table_name = ?"
+      \ where table_name = ?\
+      \ order by table_name"
       [toSql t]
 
   return $ mapMaybe mkColumn r

@@ -21,7 +21,3 @@ spec = around dbWithSchema $ do
       r <- quickQuery conn "select count(1) from auto_incrementing_pk" []
       commit conn
       [[toSql (1 :: Int)]] `shouldBe` r
-
-  describe "insert again" $
-    it "is true" $ \_ ->
-      True `shouldBe` True

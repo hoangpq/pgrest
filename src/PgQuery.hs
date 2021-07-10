@@ -4,10 +4,8 @@ module PgQuery where
 
 import qualified Data.ByteString.Char8    as BS
 import qualified Data.ByteString.Lazy     as BL
-import           Data.Functor             ((<$>))
 import           Data.List                (intercalate, intersperse)
 import           Data.Maybe               (fromMaybe)
-import           Data.Monoid              ((<>))
 
 import           Database.HDBC            hiding (colNullable, colType)
 import           Database.HDBC.PostgreSQL
@@ -16,10 +14,8 @@ import qualified Network.HTTP.Types.URI   as Net
 import qualified RangeQuery               as R
 import           Types                    (SqlRow, getRow)
 
-import qualified Data.Aeson               as JSON
-import qualified Data.Map                 as M
+import qualified Data.Map                 as Map
 
-import           Data.HashMap.Strict      (fromList)
 import           Data.Text                (Text)
 
 data RangedResult = RangedResult
@@ -39,6 +35,7 @@ getRows table qq range conn = do
       (selectStarClause schema table
         <> whereClause qq
         <> limitClause range)
+
   -- to debug
   -- print query
   r <- quickQuery conn query []
@@ -84,8 +81,8 @@ limitClause range =
   (" limit %s offset %s", [toSql limit, toSql offset])
 
   where
-    limit = fromMaybe "ALL" $ show <$> (R.limit =<< range)
-    offset = fromMaybe 0 $ R.offset <$> range
+    limit = maybe "ALL" show (R.limit =<< range)
+    offset = maybe 0 R.offset range
 
 selectStarClause :: String -> String -> QuotedSql
 selectStarClause schema table =
@@ -101,7 +98,7 @@ jsonArrayRows :: QuotedSql -> QuotedSql
 jsonArrayRows q =
   ("array_to_json(array_agg(row_to_json(t))) from (", []) <> q <> (") t", [])
 
-insert :: Text -> SqlRow -> Connection -> IO (M.Map String SqlValue)
+insert :: Text -> SqlRow -> Connection -> IO (Map.Map String SqlValue)
 insert table row conn = do
   query  <- populateSql conn ("insert into %I.%I("++colIds++")" ,
                        map toSql $ schema:table:cols)

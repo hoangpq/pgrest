@@ -29,6 +29,7 @@ library
       , warp, wai
       , http-types, scientific, time
       , HTTP, convertible
+      , case-insensitive
       , bytestring, aeson, network
       , text, optparse-applicative
       , unordered-containers
@@ -39,6 +40,7 @@ library
       , transformers
   exposed-modules:     
       Dbapi
+      , Types
       , PgStructure
       , PgQuery
       , RangeQuery
@@ -46,6 +48,7 @@ library
       OverloadedStrings
   hs-source-dirs:      
       src
+  ghc-options: -Wall
   default-language: Haskell2010
 
 executable pgrest-exe
@@ -57,7 +60,7 @@ executable pgrest-exe
     , RangeQuery
   hs-source-dirs:
       src
-  -- ghc-options: -Wall
+  ghc-options: -Wall
   build-depends:
       HDBC
     , HDBC-postgresql
@@ -73,6 +76,7 @@ executable pgrest-exe
     , network-uri
     , optparse-applicative
     , convertible, HTTP
+    , case-insensitive
     , containers
     , text
     , unordered-containers
@@ -109,6 +113,7 @@ test-suite pgrest-test
     , network-uri
     , optparse-applicative
     , convertible, HTTP
+    , case-insensitive
     , containers
     , text
     , unordered-containers
