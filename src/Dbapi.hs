@@ -4,8 +4,10 @@ module Dbapi where
 
 
 import           Control.Exception         (try)
+
 import qualified Data.ByteString.Char8     as BS
 import qualified Data.ByteString.Lazy      as BL
+import           Data.String.Conversions   (cs)
 
 import           Data.Map                  (Map, fromList, intersection, toList)
 import           Data.Ranged.Ranges        (emptyRange)
@@ -24,7 +26,6 @@ import           PgStructure               (Column (colName), columns,
 import           RangeQuery
 
 import qualified Data.Aeson                as JSON
-import           Data.Text                 (pack, unpack)
 
 import           Data.Convertible.Base     (convert)
 import           Data.Text.Encoding        (encodeUtf8)
@@ -55,7 +56,7 @@ jsonBodyAction req handler = do
   parse <- jsonBody req
   case parse of
     Left err -> return $ responseLBS status400 [jsonContentType] json
-      where json = JSON.encode . JSON.object $ [("error", JSON.String $ pack err)]
+      where json = JSON.encode . JSON.object $ [("error", JSON.String $ cs err)]
     Right body -> handler body
 
 jsonBody :: Request -> IO (Either String SqlRow)
@@ -75,7 +76,7 @@ app conn req respond = do
 
       ([table], "OPTIONS") ->
         responseLBS status200 [jsonContentType] <$>
-          printColumns (unpack table) conn
+          printColumns (cs table) conn
 
       (["favicon.ico"], "GET") ->
         return $ responseLBS status200 [] ""
@@ -84,34 +85,34 @@ app conn req respond = do
         if range == Just emptyRange
           then return $ responseLBS status416 [] "HTTP Range error"
           else do
-            r <- respondWithRangedResult <$> getRows (unpack table) qq range conn
+            r <- respondWithRangedResult <$> getRows (cs table) qq range conn
             -- print $ show $ lookup hRange $ responseHeaders r
             let canonical = urlEncodeVars $ sort $
-                            map (join (***) BS.unpack) $
+                            map (join (***) cs) $
                             parseSimpleQuery $
                             rawQueryString req
 
             return $ addHeaders [
               ("Content-Location",
-                "/" <> encodeUtf8 table <> "?" <> BS.pack canonical
+                "/" <> cs table <> "?" <> cs canonical
               )] r
 
       ([table], "POST") ->
         jsonBodyAction req (\row -> do
           allvals <- insert table row conn
-          keys <- primaryKeyColumns schema (unpack table) conn
+          keys <- primaryKeyColumns schema (cs table) conn
 
           let params = urlEncodeVars $ map (\t -> (fst t, "eq." <> convert (snd t) :: String)) $ toList $ filterByKeys allvals keys
           return $ responseLBS status201
             [ jsonContentType
-            , (hLocation, "/" <> encodeUtf8 table <> "?" <> BS.pack params)
+            , (hLocation, "/" <> encodeUtf8 table <> "?" <> cs params)
             ] ""
         )
 
       ([table], "PUT") ->
         jsonBodyAction req (\row -> do
-          keys <- primaryKeyColumns schema (unpack table) conn
-          let specifiedKeys = map (BS.unpack . fst) qq
+          keys <- primaryKeyColumns schema (cs table) conn
+          let specifiedKeys = map (cs . fst) qq
           if Set.fromList keys /= Set.fromList specifiedKeys
             then return $ responseLBS status405 []
                  "You much specify all and only primary key as params"
@@ -120,8 +121,8 @@ app conn req respond = do
                 then return $ responseLBS status400 []
                      "Content-Range is not allow in PUT request"
               else do
-                cols <- columns (unpack table) conn
-                let colNames = Set.fromList $ map (pack . colName) cols
+                cols <- columns (cs table) conn
+                let colNames = Set.fromList $ map (cs . colName) cols
 
                 let specifiedCols = Set.fromList $ map fst $ getRow row
                 if colNames == specifiedCols then do
@@ -130,7 +131,7 @@ app conn req respond = do
                   let params = urlEncodeVars $ map (\t -> (fst t, "eq." <> convert (snd t) :: String)) $ toList $ filterByKeys allvals keys
                   return $ responseLBS status201
                     [jsonContentType
-                    , (hLocation, "/" <> encodeUtf8 table <> "?" <> BS.pack params)
+                    , (hLocation, "/" <> encodeUtf8 table <> "?" <> cs params)
                     ] ""
 
                 else return $ if Set.null colNames then responseLBS status404 [] ""
@@ -157,10 +158,10 @@ respondWithRangedResult rr =
       jsonContentType,
       ( "Content-Range",
         if total == 0 || from > total
-        then "*/" <> BS.pack (show total)
-        else BS.pack (show from) <> "-"
-          <> BS.pack (show to) <> "/"
-          <> BS.pack (show total)
+        then "*/" <> cs (show total)
+        else cs (show from) <> "-"
+          <> cs (show to) <> "/"
+          <> cs (show total)
       )
     ] (rrBody rr)
 
@@ -176,7 +177,7 @@ respondWithRangedResult rr =
 
 sqlErrorHandler :: SqlError -> Response
 sqlErrorHandler e =
-  responseLBS status400 [] $ BL.fromChunks [BS.pack (seErrorMsg e)]
+  responseLBS status400 [] $ BL.fromChunks [cs (seErrorMsg e)]
 
 addHeaders :: ResponseHeaders -> Response -> Response
 addHeaders hdrs (ResponseFile s headers fp m) =

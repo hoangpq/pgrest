@@ -18,48 +18,14 @@ source-repository head
   type: git
   location: https://github.com/githubuser/pgrest
 
-library
-  build-depends:       
-      base >= 4.6 && < 5
-      , stm >= 2.5.0.0
-      , async == 2.2.3
-      , mtl == 2.2.2
-      , transformers
-      , HDBC, HDBC-postgresql
-      , warp, wai
-      , http-types, scientific, time
-      , HTTP, convertible
-      , case-insensitive
-      , bytestring, aeson, network
-      , text, optparse-applicative
-      , unordered-containers
-      , containers
-      , regex-base
-      , http-media, regex-tdfa
-      , Ranged-sets
-      , transformers
-      , zlib
-      , utf8-string
-  exposed-modules:     
-      Dbapi
+executable pgrest-exe
+  main-is: Main.hs
+  other-modules:
+        Dbapi
       , Types
       , PgStructure
       , PgQuery
       , RangeQuery
-  other-extensions:    
-      OverloadedStrings
-  hs-source-dirs:      
-      src
-  ghc-options: -Wall
-  default-language: Haskell2010
-
-executable pgrest-exe
-  main-is: Main.hs
-  other-modules:
-      Types
-    , PgStructure
-    , PgQuery
-    , RangeQuery
   hs-source-dirs:
       src
   ghc-options: -Wall
@@ -89,6 +55,7 @@ executable pgrest-exe
     , warp
     , http-media
     , regex-base
+    , string-conversions
     , regex-tdfa
     , Ranged-sets
     , regex-posix
@@ -130,10 +97,14 @@ test-suite pgrest-test
     , warp
     , http-media
     , regex-base
+    , string-conversions
     , regex-tdfa
     , Ranged-sets
     , regex-posix
     , zlib
     , utf8-string
-  other-modules: Dbapi, Spec, SpecHelper
+  other-modules: 
+        Dbapi, 
+        Spec, 
+        SpecHelper
   default-language: Haskell2010

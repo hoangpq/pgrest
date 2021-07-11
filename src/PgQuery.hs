@@ -1,6 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module PgQuery where
+module PgQuery (
+  getRows,
+  insert,
+  upsert,
+  RangedResult(..),
+) where
 
 import qualified Data.ByteString.Char8    as BS
 import qualified Data.ByteString.Lazy     as BL
@@ -88,12 +93,6 @@ limitClause range =
 selectStarClause :: String -> String -> QuotedSql
 selectStarClause schema table =
   (" select * from %I.%I t ", map toSql [schema, table])
-
-
-selectCountClause :: String -> String -> QuotedSql
-selectCountClause schema table =
-  (" select count(1) from %I.%I t ", map toSql [schema, table])
-
 
 jsonArrayRows :: QuotedSql -> QuotedSql
 jsonArrayRows q =
