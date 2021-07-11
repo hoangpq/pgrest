@@ -12,11 +12,14 @@ import           Database.HDBC.PostgreSQL
 import qualified Network.HTTP.Types.URI   as Net
 
 import qualified RangeQuery               as R
-import           Types                    (SqlRow, getRow)
+import           Types                    (SqlRow, getRow, sqlRowColumns,
+                                           sqlRowValues)
 
 import qualified Data.Map                 as Map
 
+import           Control.Monad            (join)
 import           Data.Text                (Text)
+import           Debug.Trace
 
 data RangedResult = RangedResult
   { rrFrom  :: Int,
@@ -35,8 +38,6 @@ getRows table qq range conn = do
       (selectStarClause schema table
         <> whereClause qq
         <> limitClause range)
-
-  print $ "[INFO]: Query" <> query
 
   r <- quickQuery conn query []
   return $ case r of
@@ -65,8 +66,6 @@ wherePred (column, predicate) =
   ("%I " <> op <> "%L", map toSql [column, value])
 
   where
-    -- opCode:rest = BS.split ':' $ fromMaybe "" predicate
-    -- value = BS.intercalate ":" rest
     opCode:rest = BS.split '.' $ fromMaybe "." predicate
     value = BS.intercalate "." rest
     op = case opCode of
@@ -102,17 +101,53 @@ jsonArrayRows q =
 
 insert :: Text -> SqlRow -> Connection -> IO (Map.Map String SqlValue)
 insert table row conn = do
-  query  <- populateSql conn ("insert into %I.%I("++colIds++")" ,
-                       map toSql $ schema:table:cols)
-  stmt   <- prepare conn (query ++ " values ("++phs++") returning *")
-  _      <- execute stmt values
+  sql    <- populateSql conn $ insertClause table row
+  stmt   <- prepare conn sql
+  _      <- execute stmt $ sqlRowValues row
   Just m <- fetchRowMap stmt
   return m
+
+upsert :: Text -> SqlRow -> Net.Query -> Connection -> IO (Map.Map String SqlValue)
+upsert table row qq conn = do
+  sql    <- populateSql conn $ upsertClause table row qq
+  stmt   <- prepare conn (traceShow sql sql)
+  _      <- execute stmt $ join $ replicate 2 $ sqlRowValues row
+  Just m <- fetchRowMap stmt
+  return (traceShow m m)
+
+placeholders :: String -> SqlRow -> String
+placeholders symbol = intercalate ", " . map (const symbol) . getRow
+
+insertClause :: Text -> SqlRow -> QuotedSql
+insertClause table row =
+  ("insert into %I.%I (" ++ placeholders "%I" row ++ ")",
+    map toSql $ schema : table: sqlRowColumns row)
+  <> (" values (" ++ placeholders "?" row ++ ") returning *", sqlRowValues row)
   where
-    (cols, values) = unzip . getRow $ row
-    colIds = intercalate ", " $ map (const "%I") cols
-    phs = intercalate ", " $ map (const "?") values
     schema = "public"
+
+insertClauseViaSelect :: Text -> SqlRow -> QuotedSql
+insertClauseViaSelect table row =
+  ("insert into %I.%I (" ++ placeholders "%I" row ++ ")",
+    map toSql $ schema : table : sqlRowColumns row)
+  <> (" select " ++ placeholders "?" row, sqlRowValues row)
+  where
+    schema = "public"
+
+updateClause :: Text -> SqlRow -> QuotedSql
+updateClause table row =
+  ("update %I.%I set (" ++ placeholders "%I" row ++ ")",
+    map toSql $ schema : table : sqlRowColumns row)
+  <> (" = (" ++ placeholders "?" row ++ ")", [])
+  where
+    schema = "public"
+
+upsertClause :: Text -> SqlRow -> Net.Query -> QuotedSql
+upsertClause table row qq =
+  ("with upsert as (", []) <> updateClause table row
+  <> whereClause qq
+  <> (" returning *) ", []) <> insertClauseViaSelect table row
+  <> (" where not exists (select * from upsert) returning *", [])
 
 populateSql :: Connection -> QuotedSql -> IO String
 populateSql conn sql = do
@@ -120,7 +155,6 @@ populateSql conn sql = do
   return $ fromSql escaped
 
   where
-    q = concat ["select format('", fst sql, "', ", placeholders (snd sql), ")" ]
-
-    placeholders :: [a] -> String
-    placeholders = intercalate "," . map (const "?::varchar")
+    q = concat ["select format('", fst sql, "', ", ph (snd sql), ")" ]
+    ph :: [a] -> String
+    ph = intercalate ", " . map (const "?::varchar")

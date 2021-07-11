@@ -38,6 +38,9 @@ parseRange range = do
 requestRange :: RequestHeaders -> Maybe (Range Int)
 requestRange hdrs = parseRange . BS.unpack =<< lookup hRange hdrs
 
+requestContentRange :: RequestHeaders -> Maybe NonnegRange
+requestContentRange hdrs = parseRange . BS.unpack =<< lookup "Content-Range" hdrs
+
 limit :: NonnegRange -> Maybe Int
 limit range =
   case [rangeLower range, rangeUpper range] of
@@ -48,5 +51,5 @@ offset :: NonnegRange -> Int
 offset range =
   case rangeLower range of
     BoundaryBelow from -> from
-    _                  -> 0 -- should never happen
+    _                  -> error "range without lower bound" -- should never happen
 

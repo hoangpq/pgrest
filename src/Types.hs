@@ -1,6 +1,7 @@
-module Types(SqlRow(SqlRow), getRow) where
-
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+module Types where
 import           Database.HDBC       (SqlValue (..), iToSql, toSql)
+
 
 import qualified Data.Aeson          as JSON
 import           Data.Aeson.Types    (Parser)
@@ -40,6 +41,12 @@ instance JSON.ToJSON SqlValue where
     toJSON SqlNull               = JSON.Null
     toJSON x                     = JSON.toJSON $ show x
 
+sqlRowColumns :: SqlRow -> [Text]
+sqlRowColumns = map fst . getRow
+
+sqlRowValues :: SqlRow -> [SqlValue]
+sqlRowValues = map snd . getRow
+
 newtype SqlRow = SqlRow {getRow :: [(Text, SqlValue)]} deriving (Show)
 instance JSON.FromJSON SqlRow where
     parseJSON (JSON.Object m) = foldlWithKey' add (return $ SqlRow []) m
@@ -50,3 +57,6 @@ instance JSON.FromJSON SqlRow where
                 sqlV <- JSON.parseJSON v
                 return . SqlRow $ (k, sqlV) : l
     parseJSON _ = mzero
+
+instance JSON.ToJSON SqlRow where
+    toJSON (SqlRow r) = JSON.toJSON r
