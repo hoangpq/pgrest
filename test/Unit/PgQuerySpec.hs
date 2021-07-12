@@ -6,12 +6,15 @@ import           Test.Hspec
 
 import           Database.HDBC
 
-import           PgQuery       (insert)
-import           Types         (SqlRow (..))
+import           PgQuery                 (insert)
+import           Types                   (SqlRow (..))
 
-import           Data.Map      (toList)
-import           Data.Text     (pack)
+import           Data.Map                (toList)
+-- import           Data.Text     (pack)
 import           SpecHelper
+
+import           Control.Arrow
+import           Data.String.Conversions (cs)
 
 spec :: Spec
 spec = around dbWithSchema $
@@ -27,6 +30,7 @@ spec = around dbWithSchema $
     it "throws an exception if the PK is not unique" $ \conn -> do
       r <- insert "auto_incrementing_pk" (SqlRow [
         ("non_nullable_string", toSql ("a string" :: String))]) conn
-      let row = SqlRow . map (\(k, v) -> (pack k, v)) . toList $ r
+      let row = SqlRow . map (Control.Arrow.first cs) . toList $ r
+      -- let row = SqlRow . map (\(k, v) -> (pack k, v)) . toList $ r
       insert "auto_incrementing_pk" row conn `shouldThrow` \e ->
         seState e == "23505"

@@ -30,17 +30,8 @@ spec = with appWithFixture' $ do
       options "/auto_incrementing_pk" `shouldRespondWith` [json|
       {
         "pkey":["id"],
-        "columns":{
-          "inserted_at":{
-            "precision":null,
-            "updatable":true,
-            "schema":"public",
-            "name":"inserted_at",
-            "type":"timestamp with time zone",
-            "maxLen":null,
-            "nullable":true,
-            "position":4},
-          "id":{
+        "columns": [
+          {
             "precision":32,
             "updatable":true,
             "schema":"public",
@@ -48,8 +39,19 @@ spec = with appWithFixture' $ do
             "type":"integer",
             "maxLen":null,
             "nullable":false,
-            "position":1},
-          "non_nullable_string":{
+            "position":1
+          },
+          {
+            "precision":null,
+            "updatable":true,
+            "schema":"public",
+            "name":"inserted_at",
+            "type":"timestamp with time zone",
+            "maxLen":null,
+            "nullable":true,
+            "position":4
+          },
+          {
             "precision":null,
             "updatable":true,
             "schema":"public",
@@ -57,8 +59,9 @@ spec = with appWithFixture' $ do
             "type":"character varying",
             "maxLen":null,
             "nullable":false,
-            "position":3},
-          "nullable_string":{
+            "position":3
+          },
+          {
             "precision":null,
             "updatable":true,
             "schema":"public",
@@ -66,7 +69,9 @@ spec = with appWithFixture' $ do
             "type":"character varying",
             "maxLen":null,
             "nullable":true,
-            "position":2}}
+            "position":2
+          }
+        ]
       }
       |]
       -- }}}

@@ -5,7 +5,6 @@ module PgStructure where
 import           Data.Aeson               ((.=))
 import qualified Data.Aeson               as JSON
 import qualified Data.ByteString.Lazy     as BL
-import           Data.HashMap.Strict      hiding (map, mapMaybe)
 import           Data.Maybe               (mapMaybe)
 import           Database.HDBC            (fromSql, quickQuery, toSql)
 import           Database.HDBC.PostgreSQL
@@ -87,7 +86,7 @@ columns t conn = do
       \       character_maximum_length, numeric_precision\
       \ from information_schema.columns\
       \ where table_name = ?\
-      \ order by table_name"
+      \ order by column_name"
       [toSql t]
 
   return $ mapMaybe mkColumn r
@@ -107,7 +106,7 @@ columns t conn = do
     mkColumn _ = Nothing
 
 data TableOptions = TableOptions
-  { tblOptcolumns :: HashMap String Column,
+  { tblOptcolumns :: [Column],
     tblOptpkey    :: [String]
   }
 
@@ -117,10 +116,6 @@ instance JSON.ToJSON TableOptions where
       "columns" .= tblOptcolumns t
     , "pkey"    .= tblOptpkey t ]
 
--- named column hash
-namedColumnHash :: [Column] -> HashMap String Column
-namedColumnHash = fromList . (Prelude.zip =<< Prelude.map colName)
-
 printTables :: Connection -> IO BL.ByteString
 printTables conn = JSON.encode <$> tables "public" conn
 
@@ -128,8 +123,8 @@ printColumns :: String -> Connection -> IO BL.ByteString
 printColumns table conn =
   JSON.encode <$> (TableOptions <$> cols <*> pkey)
   where
-    cols :: IO (HashMap String Column)
-    cols = namedColumnHash <$> columns table conn
+    cols :: IO [Column]
+    cols = columns table conn
     pkey :: IO [String]
     pkey = primaryKeyColumns "public" table conn
 
@@ -155,4 +150,4 @@ primaryKeyColumns s t conn = do
       \  and kc.constraint_name = tc.constraint_name \
       \  and kc.table_schema = ? \
       \  and kc.table_name = ? \
-      \ order by kc.table_name"
+      \ order by kc.column_name"
