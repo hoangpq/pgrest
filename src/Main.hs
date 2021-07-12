@@ -14,35 +14,15 @@ import           Network.Wai.Middleware.Gzip (def, gzip)
 argParser :: Parser AppConfig
 argParser =
   AppConfig
-    <$> strOption
-      ( long "db"
-          <> short 'd'
-          <> metavar "URI"
-          <> value "postgres://hoangpq:hoangpq@localhost:5432/odoo-10"
-          <> help "database  uri to expose, e.g. postgres://user:pass@host:port/database"
-      )
-    <*> option
-      auto
-      ( long "port"
-          <> short 'p'
-          <> metavar "NUMBER"
-          <> value 3333
-          <> help "port number on which to run HTTP server"
-      )
-    <*> strOption
-      ( long "sslcert"
-        <> short 'c'
-        <> metavar "PATH"
-        <> value "test/test.crt"
-        <> help "path to SSL cert file"
-      )
-    <*> strOption
-      ( long "sslkey"
-        <> short 'k'
-        <> metavar "PATH"
-        <> value "test/test.key"
-        <> help "path to SSL key fiel"
-      )
+    <$> strOption ( long "db" <> short 'd' <> metavar "URI"
+        <> value "postgres://hoangpq:hoangpq@localhost:5432/odoo-10"
+        <> help "database uri to expose, e.g. postgres://user:pass@host:port/database" )
+    <*> option auto ( long "port" <> short 'p' <> metavar "NUMBER" <> value 3333
+        <> help "port number on which to run HTTP server" )
+    <*> strOption ( long "sslcert" <> short 'c' <> metavar "PATH" <> value "test/test.crt"
+        <> help "path to SSL cert file" )
+    <*> strOption ( long "sslkey" <> short 'k' <> metavar "PATH" <> value "test/test.key"
+        <> help "path to SSL key fiel" )
 
 
 main :: IO ()
