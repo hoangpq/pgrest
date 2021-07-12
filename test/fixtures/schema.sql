@@ -10,15 +10,11 @@ SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
---
--- TOC entry 6 (class 2615 OID 231254)
--- Name: 1; Type: SCHEMA; Schema: -; Owner: -
---
--- CREATE SCHEMA "public";
---
 -- TOC entry 178 (class 3079 OID 12018)
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
 --
+-- CREATE SCHEMA IF NOT EXISTS public;
+-- CREATE SCHEMA IF NOT EXISTS dbapi;
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 --
 -- TOC entry 2248 (class 0 OID 0)
@@ -26,8 +22,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
 --
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-SET search_path = "public",
-    pg_catalog;
+SET search_path = "public";
 SET default_tablespace = '';
 SET default_with_oids = false;
 --
@@ -175,25 +170,6 @@ VALUES (15);
 -- Name: items_id_seq; Type: SEQUENCE SET; Schema: 1; Owner: -
 --
 SELECT pg_catalog.setval('items_id_seq', 15, true);
---
--- TOC entry 2240 (class 0 OID 231272)
--- Dependencies: 175
--- Data for Name: menagerie; Type: TABLE DATA; Schema: 1; Owner: -
---
---
--- TOC entry 2241 (class 0 OID 231278)
--- Dependencies: 176
--- Data for Name: no_pk; Type: TABLE DATA; Schema: 1; Owner: -
---
---
--- TOC entry 2242 (class 0 OID 231284)
--- Dependencies: 177
--- Data for Name: simple_pk; Type: TABLE DATA; Schema: 1; Owner: -
---
---
--- TOC entry 2119 (class 2606 OID 231293)
--- Name: auto_incrementing_pk_pkey; Type: CONSTRAINT; Schema: 1; Owner: -; Tablespace: 
---
 ALTER TABLE ONLY auto_incrementing_pk
 ADD CONSTRAINT auto_incrementing_pk_pkey PRIMARY KEY (id);
 --

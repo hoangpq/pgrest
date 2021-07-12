@@ -9,6 +9,8 @@ import           Data.Maybe               (mapMaybe)
 import           Database.HDBC            (fromSql, quickQuery, toSql)
 import           Database.HDBC.PostgreSQL
 
+import           Debug.Trace
+
 data Table = Table
   { tableSchema     :: String,
     tableName       :: String,
@@ -116,24 +118,24 @@ instance JSON.ToJSON TableOptions where
       "columns" .= tblOptcolumns t
     , "pkey"    .= tblOptpkey t ]
 
-printTables :: Connection -> IO BL.ByteString
-printTables conn = JSON.encode <$> tables "public" conn
+printTables :: String -> Connection -> IO BL.ByteString
+printTables schema conn = JSON.encode <$> tables schema conn
 
-printColumns :: String -> Connection -> IO BL.ByteString
-printColumns table conn =
+printColumns :: String -> String -> Connection -> IO BL.ByteString
+printColumns schema table conn =
   JSON.encode <$> (TableOptions <$> cols <*> pkey)
   where
     cols :: IO [Column]
     cols = columns table conn
     pkey :: IO [String]
-    pkey = primaryKeyColumns "public" table conn
+    pkey = primaryKeyColumns schema table conn
 
 primaryKeyColumns :: String -> String -> Connection -> IO [String]
 primaryKeyColumns s t conn = do
   r <-
     quickQuery
       conn
-      query
+      (traceShow query query)
       [toSql s, toSql t]
 
   return $ map fromSql (concat r)

@@ -74,11 +74,11 @@ app conn req respond = do
   r <- try $
     case (path, verb) of
       ([], _) ->
-        responseLBS status200 [jsonContentType] <$> printTables conn
+        responseLBS status200 [jsonContentType] <$> printTables schema conn
 
       ([table], "OPTIONS") ->
         responseLBS status200 [jsonContentType] <$>
-          printColumns (cs table) conn
+          printColumns schema (cs table) conn
 
       (["favicon.ico"], "GET") ->
         return $ responseLBS status200 [] ""
@@ -87,7 +87,7 @@ app conn req respond = do
         if range == Just emptyRange
           then return $ responseLBS status416 [] "HTTP Range error"
           else do
-            r <- respondWithRangedResult <$> getRows (cs table) qq range conn
+            r <- respondWithRangedResult <$> getRows schema (cs table) qq range conn
             -- print $ show $ lookup hRange $ responseHeaders r
             let canonical = urlEncodeVars $ sort $
                             map (join (***) cs) $
@@ -101,8 +101,8 @@ app conn req respond = do
 
       ([table], "POST") ->
         jsonBodyAction req (\row -> do
-          allvals <- insert table row conn
-          keys <- primaryKeyColumns schema (cs table) conn
+          allvals <- insert schema table row conn
+          keys <- primaryKeyColumns (cs schema) (cs table) conn
 
           let params = urlEncodeVars $ map (\t -> (fst t, "eq." <> convert (snd t) :: String)) $ toList $ filterByKeys allvals keys
           return $ responseLBS status201
@@ -113,7 +113,7 @@ app conn req respond = do
 
       ([table], "PUT") ->
         jsonBodyAction req (\row -> do
-          keys <- primaryKeyColumns schema (cs table) conn
+          keys <- primaryKeyColumns (cs schema) (cs table) conn
           let specifiedKeys = map (cs . fst) qq
           if Set.fromList keys /= Set.fromList specifiedKeys
             then return $ responseLBS status405 []
@@ -128,7 +128,7 @@ app conn req respond = do
 
                 let specifiedCols = Set.fromList $ map fst $ getRow row
                 if colNames == specifiedCols then do
-                  allvals <- upsert table row qq conn
+                  allvals <- upsert (cs schema) table row qq conn
 
                   let params = urlEncodeVars $ map (\t -> (fst t, "eq." <> convert (snd t) :: String)) $ toList $ filterByKeys allvals keys
                   return $ responseLBS status201
