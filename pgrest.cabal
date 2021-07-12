@@ -38,6 +38,7 @@ executable pgrest-exe
     , async == 2.2.3
     , mtl == 2.2.2
     , transformers
+    , warp-tls
     , bytestring
     , http-types
     , network
@@ -49,6 +50,7 @@ executable pgrest-exe
     , text
     , unordered-containers
     , wai
+    , wai-extra
     , http-types
     , scientific
     , time
@@ -76,6 +78,7 @@ test-suite pgrest-test
     , stm >= 2.5.0.0
     , mtl == 2.2.2
     , transformers
+    , warp-tls
     , bytestring
     , hspec
     , http-types

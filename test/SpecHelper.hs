@@ -19,7 +19,7 @@ import           Data.CaseInsensitive
 import           Text.Regex.TDFA           ((=~))
 
 cfg :: AppConfig
-cfg = AppConfig "postgres://postgres:@localhost:5432/dbapi_test" 9000
+cfg = AppConfig "postgres://postgres:@localhost:5432/dbapi_test" 9000 "test/test.crt" "test/test.key"
 
 openConnection :: IO Connection
 openConnection = connectPostgreSQL' $ configDbUri cfg

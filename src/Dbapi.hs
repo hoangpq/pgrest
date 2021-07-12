@@ -44,8 +44,10 @@ import           Network.Wai.Internal
 import           Data.Maybe                (isJust)
 
 data AppConfig = AppConfig
-  { configDbUri :: String,
-    configPort  :: Int
+  { configDbUri   :: String
+  , configPort    :: Int
+  , configSslCert :: FilePath
+  , configSSlKey  :: FilePath
   }
 
 jsonContentType :: (HeaderName, BS.ByteString)
