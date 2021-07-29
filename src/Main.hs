@@ -22,7 +22,7 @@ argParser =
     <*> strOption ( long "sslcert" <> short 'c' <> metavar "PATH" <> value "test/test.crt"
         <> help "path to SSL cert file" )
     <*> strOption ( long "sslkey" <> short 'k' <> metavar "PATH" <> value "test/test.key"
-        <> help "path to SSL key fiel" )
+        <> help "path to SSL key file" )
 
 
 main :: IO ()
@@ -42,3 +42,44 @@ main = do
 
   where
     describe = progDesc "create a REST API to an existing Postgres database"
+
+
+data Suit = Clubs | Diamonds | Hearts | Spades deriving (Show)
+data Color = Red | Back deriving (Show)
+data Point
+  = Two
+  | Three
+  | Four
+  | Five
+  | Six
+  | Seven
+  | Eight
+  | Nine
+  | Ten
+  | Jack
+  | Queen
+  | King
+  | Ace
+  deriving (Eq, Ord, Show)
+
+data Card = Card
+  { suit  :: Suit
+  , color :: Color
+  , point :: Point
+  } deriving (Show)
+
+makeSuit :: Suit -> Maybe Suit
+makeSuit = Just
+
+makeColor :: Color -> Maybe Color
+makeColor = Just
+
+makePoint :: Point -> Maybe Point
+makePoint = Just
+
+absoluteJust :: Maybe Int -> Maybe Int
+absoluteJust n = case n of
+  Nothing -> Nothing
+  Just val
+    | val < 0 -> Just (-val)
+    | otherwise -> Just val

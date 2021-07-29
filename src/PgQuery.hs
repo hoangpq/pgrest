@@ -1,10 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module PgQuery (
-  getRows,
-  insert,
-  upsert,
-  RangedResult(..),
+  getRows
+, insert
+, upsert
+, RangedResult(..)
 ) where
 
 import qualified Data.ByteString.Char8    as BS

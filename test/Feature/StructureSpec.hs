@@ -15,6 +15,7 @@ spec = with appWithFixture' $ do
     it "lists view in schema" $
       get "/" `shouldRespondWith`
         [json| [
+          {"schema":"public","name":"auth","insertable":true},
           {"schema":"public","name":"auto_incrementing_pk","insertable":true}
         , {"schema":"public","name":"compound_pk","insertable":true}
         , {"schema":"public","name":"items","insertable":true}
@@ -32,6 +33,7 @@ spec = with appWithFixture' $ do
         "pkey":["id"],
         "columns": [
           {
+            "default":"nextval('auto_incrementing_pk_id_seq'::regclass)",
             "precision":32,
             "updatable":true,
             "schema":"public",
@@ -42,6 +44,7 @@ spec = with appWithFixture' $ do
             "position":1
           },
           {
+            "default":"now()",
             "precision":null,
             "updatable":true,
             "schema":"public",
@@ -52,6 +55,7 @@ spec = with appWithFixture' $ do
             "position":4
           },
           {
+            "default":null,
             "precision":null,
             "updatable":true,
             "schema":"public",
@@ -62,6 +66,7 @@ spec = with appWithFixture' $ do
             "position":3
           },
           {
+            "default":null,
             "precision":null,
             "updatable":true,
             "schema":"public",

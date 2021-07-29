@@ -40,7 +40,8 @@ data Column = Column
     colType      :: String,
     colUpdatable :: Bool,
     colMaxLen    :: Maybe Int,
-    colPrecision :: Maybe Int
+    colPrecision :: Maybe Int,
+    colDefault   :: Maybe String
   }
   deriving (Show)
 
@@ -54,7 +55,8 @@ instance JSON.ToJSON Column where
         "type" .= colType c,
         "updatable" .= colUpdatable c,
         "maxLen" .= colMaxLen c,
-        "precision" .= colPrecision c
+        "precision" .= colPrecision c,
+        "default" .= colDefault c
       ]
 
 tables :: String -> Connection -> IO [Table]
@@ -85,7 +87,8 @@ columns t conn = do
       conn
       "select table_schema, table_name, column_name, ordinal_position,\
       \       is_nullable, data_type, is_updatable,\
-      \       character_maximum_length, numeric_precision\
+      \       character_maximum_length, numeric_precision,\
+      \       column_default\
       \ from information_schema.columns\
       \ where table_name = ?\
       \ order by column_name"
@@ -93,7 +96,7 @@ columns t conn = do
 
   return $ mapMaybe mkColumn r
   where
-    mkColumn [schema, table, name, pos, nullable, colT, updatable, maxlen, precision] =
+    mkColumn [schema, table, name, pos, nullable, colT, updatable, maxlen, precision, defVal] =
       Just $
         Column
           (fromSql schema)
@@ -105,6 +108,7 @@ columns t conn = do
           (toBool (fromSql updatable))
           (fromSql maxlen)
           (fromSql precision)
+          (fromSql defVal)
     mkColumn _ = Nothing
 
 data TableOptions = TableOptions

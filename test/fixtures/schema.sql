@@ -196,6 +196,41 @@ ADD CONSTRAINT items_pkey PRIMARY KEY (id);
 --
 ALTER TABLE ONLY menagerie
 ADD CONSTRAINT menagerie_pkey PRIMARY KEY ("integer");
--- Completed on 2014-08-31 10:00:41 PDT
---
--- PostgreSQL database dump complete
+
+
+CREATE TABLE auth (
+    id character varying NOT NULL,
+    rolname name NOT NULL,
+    pass character(60) NOT NULL
+);
+
+ALTER TABLE ONLY auth
+ADD CONSTRAINT auth_pkey PRIMARY KEY (id);
+
+CREATE FUNCTION check_role_exists() RETURNS trigger LANGUAGE plpgsql AS $$ begin if not exists (
+    select 1
+    from pg_roles as r
+    where r.rolname = new.rolname
+) then raise foreign_key_violation using message = 'Cannot create user with unknown role: ' || new.rolname;
+return null;
+end if;
+return new;
+end $$;
+
+
+CREATE FUNCTION create_role_if_not_exists(rolename name) RETURNS text LANGUAGE plpgsql AS $$ BEGIN IF NOT EXISTS (
+    SELECT *
+    FROM pg_roles
+    WHERE rolname = rolename
+) THEN EXECUTE format('CREATE ROLE %I', rolename);
+RETURN 'CREATE ROLE';
+ELSE RETURN format('ROLE ''%I'' ALREADY EXISTS', rolename);
+END IF;
+END;
+$$;
+
+CREATE CONSTRAINT TRIGGER ensure_auth_role_exists
+AFTER
+INSERT
+    OR
+UPDATE ON auth NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE check_role_exists();
