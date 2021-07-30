@@ -70,6 +70,12 @@ CREATE SEQUENCE items_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE
 -- Dependencies: 174
 -- Name: items_id_seq; Type: SEQUENCE OWNED BY; Schema: 1; Owner: -
 --
+
+CREATE TYPE public.enum_menagerie_type AS ENUM (
+    'foo',
+    'bar'
+);
+
 ALTER SEQUENCE items_id_seq OWNED BY items.id;
 --
 -- TOC entry 175 (class 1259 OID 231272)
@@ -81,7 +87,8 @@ CREATE TABLE menagerie (
     "varchar" character varying NOT NULL,
     "boolean" boolean NOT NULL,
     date date NOT NULL,
-    money money NOT NULL
+    money money NOT NULL,
+    enum "public".enum_menagerie_type NOT NULL
 );
 --
 -- TOC entry 176 (class 1259 OID 231278)

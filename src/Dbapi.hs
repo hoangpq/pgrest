@@ -70,82 +70,81 @@ filterByKeys m keys =
     m `intersection` fromList (zip keys $ repeat undefined)
 
 app :: Connection -> Application
-app conn req respond = do
-  r <- try $
-    case (path, verb) of
-      ([], _) ->
-        responseLBS status200 [jsonContentType] <$> printTables schema conn
+app conn req respond =
+  respond =<< case (path, verb) of
+    ([], _) ->
+      responseLBS status200 [jsonContentType] <$> printTables schema conn
 
-      ([table], "OPTIONS") ->
-        responseLBS status200 [jsonContentType] <$>
-          printColumns schema (cs table) conn
+    ([table], "OPTIONS") ->
+      responseLBS status200 [jsonContentType] <$>
+        printColumns schema (cs table) conn
 
-      (["favicon.ico"], "GET") ->
-        return $ responseLBS status200 [] ""
+    (["favicon.ico"], "GET") ->
+      return $ responseLBS status200 [] ""
 
-      ([table], "GET") ->
-        if range == Just emptyRange
-          then return $ responseLBS status416 [] "HTTP Range error"
-          else do
-            r <- respondWithRangedResult <$> getRows schema (cs table) qq range conn
-            -- print $ show $ lookup hRange $ responseHeaders r
-            let canonical = urlEncodeVars $ sort $
-                            map (join (***) cs) $
-                            parseSimpleQuery $
-                            rawQueryString req
+    ([table], "GET") ->
+      if range == Just emptyRange
+        then return $ responseLBS status416 [] "HTTP Range error"
+        else do
+          r <- respondWithRangedResult <$> getRows schema (cs table) qq range conn
+          -- print $ show $ lookup hRange $ responseHeaders r
+          let canonical = urlEncodeVars $ sort $
+                          map (join (***) cs) $
+                          parseSimpleQuery $
+                          rawQueryString req
 
-            return $ addHeaders [
-              ("Content-Location",
-                "/" <> cs table <> "?" <> cs canonical
-              )] r
+          return $ addHeaders [
+            ("Content-Location",
+              "/" <> cs table <> "?" <> cs canonical
+            )] r
 
-      ([table], "POST") ->
-        jsonBodyAction req (\row -> do
-          allvals <- insert schema table row conn
-          keys <- primaryKeyColumns (cs schema) (cs table) conn
+    ([table], "POST") ->
+      jsonBodyAction req (\row -> do
+        allvals <- insert schema table row conn
+        keys <- primaryKeyColumns (cs schema) (cs table) conn
 
-          let params = urlEncodeVars $ map (\t -> (fst t, "eq." <> convert (snd t) :: String)) $ toList $ filterByKeys allvals keys
-          return $ responseLBS status201
-            [ jsonContentType
-            , (hLocation, "/" <> encodeUtf8 table <> "?" <> cs params)
-            ] ""
-        )
+        let params = urlEncodeVars $ map (\t -> (fst t, "eq." <> convert (snd t) :: String)) $ toList $ filterByKeys allvals keys
+        return $ responseLBS status201
+          [ jsonContentType
+          , (hLocation, "/" <> encodeUtf8 table <> "?" <> cs params)
+          ] ""
+      )
 
-      ([table], "PUT") ->
-        jsonBodyAction req (\row -> do
-          keys <- primaryKeyColumns (cs schema) (cs table) conn
-          let specifiedKeys = map (cs . fst) qq
-          if Set.fromList keys /= Set.fromList specifiedKeys
-            then return $ responseLBS status405 []
-                 "You much specify all and only primary key as params"
-            else
-              if isJust cRange
-                then return $ responseLBS status400 []
-                     "Content-Range is not allow in PUT request"
-              else do
-                cols <- columns (cs table) conn
-                let colNames = Set.fromList $ map (cs . colName) cols
+    ([table], "PUT") ->
+      jsonBodyAction req (\row -> do
+        keys <- primaryKeyColumns (cs schema) (cs table) conn
+        let specifiedKeys = map (cs . fst) qq
+        if Set.fromList keys /= Set.fromList specifiedKeys
+          then return $ responseLBS status405 []
+                "You much specify all and only primary key as params"
+          else
+            if isJust cRange
+              then return $ responseLBS status400 []
+                    "Content-Range is not allow in PUT request"
+            else do
+              cols <- columns (cs table) conn
+              let colNames = Set.fromList $ map (cs . colName) cols
 
-                let specifiedCols = Set.fromList $ map fst $ getRow row
-                if colNames == specifiedCols then do
-                  allvals <- upsert (cs schema) table row qq conn
+              let specifiedCols = Set.fromList $ map fst $ getRow row
+              if colNames == specifiedCols then do
+                allvals <- upsert (cs schema) table row qq conn
 
-                  let params = urlEncodeVars $ map (\t -> (fst t, "eq." <> convert (snd t) :: String)) $ toList $ filterByKeys allvals keys
-                  return $ responseLBS status201
-                    [jsonContentType
-                    , (hLocation, "/" <> encodeUtf8 table <> "?" <> cs params)
-                    ] ""
+                let params = urlEncodeVars $ map (\t -> (fst t, "eq." <> convert (snd t) :: String)) $ toList $ filterByKeys allvals keys
+                return $ responseLBS status201
+                  [jsonContentType
+                  , (hLocation, "/" <> encodeUtf8 table <> "?" <> cs params)
+                  ] ""
 
-                else return $ if Set.null colNames then responseLBS status404 [] ""
-                  else responseLBS status400 []
-                    "You must specify all column in PUT request"
+              else return $ if Set.null colNames then responseLBS status404 [] ""
+                else responseLBS status400 []
+                  "You must specify all column in PUT request"
 
-              )
+            )
 
-      (_, _) ->
-        return $ responseLBS status404 [] ""
+    (_, _) ->
+      return $ responseLBS status404 [] ""
 
-  respond $ either sqlErrorHandler id r
+  -- respond $ either sqlErrorHandler id r
   where
     path = pathInfo req
     qq = queryString req

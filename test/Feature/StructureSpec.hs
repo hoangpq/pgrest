@@ -15,8 +15,8 @@ spec = with appWithFixture' $ do
     it "lists view in schema" $
       get "/" `shouldRespondWith`
         [json| [
-          {"schema":"public","name":"auth","insertable":true},
-          {"schema":"public","name":"auto_incrementing_pk","insertable":true}
+          {"schema":"public","name":"auth","insertable":true}
+        , {"schema":"public","name":"auto_incrementing_pk","insertable":true}
         , {"schema":"public","name":"compound_pk","insertable":true}
         , {"schema":"public","name":"items","insertable":true}
         , {"schema":"public","name":"menagerie","insertable":true}
@@ -27,56 +27,18 @@ spec = with appWithFixture' $ do
 
   describe "Table info" $
     it "is available with OPTIONS verb" $
-      -- {{{ big json object
-      options "/auto_incrementing_pk" `shouldRespondWith` [json|
-      {
-        "pkey":["id"],
-        "columns": [
-          {
-            "default":"nextval('auto_incrementing_pk_id_seq'::regclass)",
-            "precision":32,
-            "updatable":true,
-            "schema":"public",
-            "name":"id",
-            "type":"integer",
-            "maxLen":null,
-            "nullable":false,
-            "position":1
-          },
-          {
-            "default":"now()",
-            "precision":null,
-            "updatable":true,
-            "schema":"public",
-            "name":"inserted_at",
-            "type":"timestamp with time zone",
-            "maxLen":null,
-            "nullable":true,
-            "position":4
-          },
-          {
-            "default":null,
-            "precision":null,
-            "updatable":true,
-            "schema":"public",
-            "name":"non_nullable_string",
-            "type":"character varying",
-            "maxLen":null,
-            "nullable":false,
-            "position":3
-          },
-          {
-            "default":null,
-            "precision":null,
-            "updatable":true,
-            "schema":"public",
-            "name":"nullable_string",
-            "type":"character varying",
-            "maxLen":null,
-            "nullable":true,
-            "position":2
-          }
-        ]
-      }
-      |]
-      -- }}}
+      options "/menagerie" `shouldRespondWith` 
+        [json| {
+          "pkey":["integer"],
+          "columns":[
+            {"default":null,"precision":32,"updatable":true,"schema":"public","name":"integer","type":"integer","maxLen":null,"enum":null,"nullable":false,"position":1}
+          , {"default":null,"precision":53,"updatable":true,"schema":"public","name":"double","type":"double precision","maxLen":null,"enum":null,"nullable":false,"position":2}
+          , {"default":null,"precision":null,"updatable":true,"schema":"public","name":"varchar","type":"character varying","maxLen":null,"enum":null,"nullable":false,"position":3}
+          , {"default":null,"precision":null,"updatable":true,"schema":"public","name":"boolean","type":"boolean","maxLen":null,"enum":null,"nullable":false,"position":4}
+          , {"default":null,"precision":null,"updatable":true,"schema":"public","name":"date","type":"date","maxLen":null,"enum":null,"nullable":false,"position":5}
+          , {"default":null,"precision":null,"updatable":true,"schema":"public","name":"money","type":"money","maxLen":null,"enum":null,"nullable":false,"position":6}
+          , {"default":null,"precision":null,"updatable":true,"schema":"public","name":"enum","type":"USER-DEFINED","maxLen":null,"enum":["foo","bar"],"nullable":false,"position":7}
+          ]
+        } 
+        |] 
+        {matchStatus = 200}

@@ -9,6 +9,7 @@ import           Data.Maybe               (mapMaybe)
 import           Database.HDBC            (fromSql, quickQuery, toSql)
 import           Database.HDBC.PostgreSQL
 
+import           Data.List.Split          (splitOn)
 import           Debug.Trace
 
 data Table = Table
@@ -41,7 +42,8 @@ data Column = Column
     colUpdatable :: Bool,
     colMaxLen    :: Maybe Int,
     colPrecision :: Maybe Int,
-    colDefault   :: Maybe String
+    colDefault   :: Maybe String,
+    colEnum      :: Maybe [String]
   }
   deriving (Show)
 
@@ -56,7 +58,8 @@ instance JSON.ToJSON Column where
         "updatable" .= colUpdatable c,
         "maxLen" .= colMaxLen c,
         "precision" .= colPrecision c,
-        "default" .= colDefault c
+        "default" .= colDefault c,
+        "enum" .= colEnum c
       ]
 
 tables :: String -> Connection -> IO [Table]
@@ -85,18 +88,36 @@ columns t conn = do
   r <-
     quickQuery
       conn
-      "select table_schema, table_name, column_name, ordinal_position,\
-      \       is_nullable, data_type, is_updatable,\
-      \       character_maximum_length, numeric_precision,\
-      \       column_default\
-      \ from information_schema.columns\
-      \ where table_name = ?\
-      \ order by column_name"
-      [toSql t]
+      " select info.table_schema as schema, info.table_name as table_name,\
+      \        info.column_name as name, info.ordinal_position as position,\
+      \        info.is_nullable as nullable, data_type as col_type,\
+      \        info.is_updatable as updatable, info.character_maximum_length as max_len,\
+      \        info.numeric_precision as precision, info.column_default as default_value,\
+      \        array_to_string(enum_info.vals, ',') as enum \
+      \ from (\
+      \   select table_schema, table_name, column_name, ordinal_position,\
+      \          is_nullable, data_type, is_updatable,\
+      \          character_maximum_length, numeric_precision,\
+      \          column_default, udt_name \
+      \     from information_schema.columns \
+      \     where table_schema = 'public' \
+      \       and table_name = ? \
+      \   ) as info \
+      \   left outer join ( \
+      \     select n.nspname as s, \
+      \            t.typname as n, \
+      \            array_agg(e.enumlabel) as vals \
+      \     from pg_type t \
+      \       join pg_enum e on t.oid = e.enumtypid \
+      \       join pg_catalog.pg_namespace n on n.oid = t.typnamespace \
+      \     group by s, n \
+      \   ) as enum_info \
+      \   on (info.udt_name = enum_info.n)\
+      \ order by position" [toSql t]
 
   return $ mapMaybe mkColumn r
   where
-    mkColumn [schema, table, name, pos, nullable, colT, updatable, maxlen, precision, defVal] =
+    mkColumn [schema, table, name, pos, nullable, colT, updatable, maxlen, precision, defVal, enum] =
       Just $
         Column
           (fromSql schema)
@@ -109,6 +130,7 @@ columns t conn = do
           (fromSql maxlen)
           (fromSql precision)
           (fromSql defVal)
+          (splitOn "," <$> fromSql enum)
     mkColumn _ = Nothing
 
 data TableOptions = TableOptions

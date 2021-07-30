@@ -1,8 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 module SpecHelper where
 
-import           Network.Wai
-import           Test.Hspec
+import           Network.Wai               (Application)
+import           Network.Wai.Test          (SResponse)
+import           Test.Hspec                hiding (pending, pendingWith)
+import           Test.Hspec.Wai            as HW
 
 import           Database.HDBC
 import           Database.HDBC.PostgreSQL

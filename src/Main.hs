@@ -11,6 +11,8 @@ import           Options.Applicative         hiding (columns)
 import           Network.Wai.Handler.WarpTLS (runTLS, tlsSettings)
 import           Network.Wai.Middleware.Gzip (def, gzip)
 
+import           Middleware                  (reportPgErrors)
+
 argParser :: Parser AppConfig
 argParser =
   AppConfig
@@ -38,48 +40,7 @@ main = do
 
   conn <- connectPostgreSQL' dburi
   -- run port $ app conn
-  runTLS tls settings $ gzip def $ app conn
+  runTLS tls settings $ gzip def $ reportPgErrors $ app conn
 
   where
     describe = progDesc "create a REST API to an existing Postgres database"
-
-
-data Suit = Clubs | Diamonds | Hearts | Spades deriving (Show)
-data Color = Red | Back deriving (Show)
-data Point
-  = Two
-  | Three
-  | Four
-  | Five
-  | Six
-  | Seven
-  | Eight
-  | Nine
-  | Ten
-  | Jack
-  | Queen
-  | King
-  | Ace
-  deriving (Eq, Ord, Show)
-
-data Card = Card
-  { suit  :: Suit
-  , color :: Color
-  , point :: Point
-  } deriving (Show)
-
-makeSuit :: Suit -> Maybe Suit
-makeSuit = Just
-
-makeColor :: Color -> Maybe Color
-makeColor = Just
-
-makePoint :: Point -> Maybe Point
-makePoint = Just
-
-absoluteJust :: Maybe Int -> Maybe Int
-absoluteJust n = case n of
-  Nothing -> Nothing
-  Just val
-    | val < 0 -> Just (-val)
-    | otherwise -> Just val

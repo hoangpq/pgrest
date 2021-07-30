@@ -5,7 +5,7 @@ module Feature.InsertSpec where
 import           SpecHelper
 
 import           Network.Wai.Test          (SResponse (simpleBody, simpleHeaders, simpleStatus))
-import           Test.Hspec
+import           Test.Hspec                hiding (pending, pendingWith)
 import           Test.Hspec.Wai
 import           Test.Hspec.Wai.JSON
 
@@ -27,6 +27,7 @@ spec = with appWithFixture' $
         [json| {
           "integer":13,"double":3.14159,"varchar":"testing!"
         , "boolean":false,"date":"01/01/1990","money":"$3.99"
+        , "enum": "foo"
         } |]
         `shouldRespondWith` 201
 
@@ -45,10 +46,10 @@ spec = with appWithFixture' $
             incStr record `shouldBe` "not null"
             incNullableStr record `shouldBe` Nothing
 
-      context "into a table with simple pk" $
-        it "fails with 400 and error" $
-          post "/simple_pk" [json| { "extra":"foo"} |]
-            `shouldRespondWith` 400
+      -- context "into a table with simple pk" $
+      --   it "fails with 400 and error" $
+      --     post "/simple_pk" [json| { "extra":"foo"} |]
+      --       `shouldRespondWith` 400
 
       context "into a table with no pk" $
         it "succeeds with 201 and a link including all fields" $ do

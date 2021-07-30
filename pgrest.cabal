@@ -26,6 +26,7 @@ executable pgrest-exe
       , PgStructure
       , PgQuery
       , RangeQuery
+      , Middleware
   hs-source-dirs:
       src
   ghc-options: -Wall
@@ -39,6 +40,7 @@ executable pgrest-exe
     , mtl == 2.2.2
     , transformers
     , warp-tls
+    , split
     , bytestring
     , http-types
     , network
@@ -79,6 +81,7 @@ test-suite pgrest-test
     , mtl == 2.2.2
     , transformers
     , warp-tls
+    , split
     , bytestring
     , hspec
     , http-types
@@ -92,7 +95,7 @@ test-suite pgrest-test
     , unordered-containers
     , wai
     , wai-extra
-    , hspec-wai
+    , hspec-wai >= 0.5.0
     , hspec-wai-json
     , http-types
     , scientific
