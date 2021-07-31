@@ -27,7 +27,7 @@ spec = with appWithFixture' $ do
 
   describe "Table info" $
     it "is available with OPTIONS verb" $
-      options "/menagerie" `shouldRespondWith` 
+      options "/menagerie" `shouldRespondWith`
         [json| {
           "pkey":["integer"],
           "columns":[
@@ -39,6 +39,6 @@ spec = with appWithFixture' $ do
           , {"default":null,"precision":null,"updatable":true,"schema":"public","name":"money","type":"money","maxLen":null,"enum":null,"nullable":false,"position":6}
           , {"default":null,"precision":null,"updatable":true,"schema":"public","name":"enum","type":"USER-DEFINED","maxLen":null,"enum":["foo","bar"],"nullable":false,"position":7}
           ]
-        } 
-        |] 
+        }
+        |]
         {matchStatus = 200}
