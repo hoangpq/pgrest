@@ -131,7 +131,8 @@ columns t conn = do
           (fromSql precision)
           (fromSql defVal)
           (splitOn "," <$> fromSql enum)
-    mkColumn _ = Nothing
+    mkColumn _ = error $ "Incomplete column data received for table " ++
+      t ++ " in schema public."
 
 data TableOptions = TableOptions
   { tblOptcolumns :: [Column],

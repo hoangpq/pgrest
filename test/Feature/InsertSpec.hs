@@ -69,18 +69,17 @@ spec = with appWithFixture' $
           }
 
     describe "Putting record" $ do
-
       context "to known uri" $
         it "gives a 404" $
           request methodPut "/fake" []
             [json| { "readl": false }|]
-              `shouldRespondWith` 404
+            `shouldRespondWith` 404
 
       context "without a fully-specified primary key" $
         it "is not an allowed operation" $
           request methodPut "/compound_pk?kq=eq.12" []
             [json| { "k1":12, "k2":42 }|]
-              `shouldRespondWith` 405
+            `shouldRespondWith` 405
 
       context "with fully-specified primary key" $ do
 
@@ -89,13 +88,13 @@ spec = with appWithFixture' $
             request methodPut "/compound_pk?k1=eq.1&k2=eq.2"
               [("Content-Range", "0-0")]
               [json| { "k1":1, "k2":2, "extra":3}|]
-                `shouldRespondWith` 400
+              `shouldRespondWith` 400
 
         context "not specifying every column in the table" $
           it "is rejected for lack of idempotence" $
             request methodPut "/compound_pk?k1=eq.12&k2=eq.42" []
               [json| { "k1":12, "k2":42 } |]
-                `shouldRespondWith` 400
+              `shouldRespondWith` 400
 
         context "specifying every column in the table" $
           it "succeeds with 201 and link" $ do
