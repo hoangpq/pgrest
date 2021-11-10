@@ -37,8 +37,7 @@ main = do
   Prelude.putStrLn $ "Listening on port " ++ (show $ configPort conf :: String)
 
   conn <- connectPostgreSQL' dburi
-  -- run port $ app conn
-  runTLS tls settings $ gzip def $ reportPgErrors $ app conn
+  runTLS tls settings $ gzip def $ app conn
 
   where
     describe = progDesc "create a REST API to an existing Postgres database"
