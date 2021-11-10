@@ -11,8 +11,6 @@ import           Options.Applicative         hiding (columns)
 import           Network.Wai.Handler.WarpTLS (runTLS, tlsSettings)
 import           Network.Wai.Middleware.Gzip (def, gzip)
 
-import           Middleware                  (reportPgErrors)
-
 argParser :: Parser AppConfig
 argParser =
   AppConfig
