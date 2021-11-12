@@ -11,6 +11,20 @@ import           Options.Applicative         hiding (columns)
 import           Network.Wai.Handler.WarpTLS (runTLS, tlsSettings)
 import           Network.Wai.Middleware.Gzip (def, gzip)
 
+import           Control.Exception           (bracket)
+
+import           Data.Pool                   (createPool, destroyAllResources)
+import           Database.HDBC               (disconnect)
+import           Middleware                  (withDBConnection)
+
+import           Paths_pgrest                (version)
+
+import           Data.List                   (intercalate)
+import           Data.Version                (versionBranch)
+import           System.IO                   (print)
+
+import           Data.String.Conversions     (cs)
+
 argParser :: Parser AppConfig
 argParser =
   AppConfig
@@ -23,21 +37,30 @@ argParser =
         <> help "path to SSL cert file" )
     <*> strOption ( long "sslkey" <> short 'k' <> metavar "PATH" <> value "test/test.key"
         <> help "path to SSL key file" )
+    <*> option auto ( long "db-pool"<> metavar "NUMBER" <> value 10
+        <> help "Max connections in database pool" )
 
 
 main :: IO ()
 main = do
+  -- Parse command line arguments
   conf <- execParser (info (helper <*> argParser) describe)
-  let port = configPort conf
-  let dburi = configDbUri conf
 
-  let tls = tlsSettings (configSslCert conf) (configSSlKey conf)
-  let settings = setPort port defaultSettings
-
-  Prelude.putStrLn $ "Listening on port " ++ (show $ configPort conf :: String)
-
-  conn <- connectPostgreSQL' dburi
-  runTLS tls settings $ gzip def $ app conn
-
+  bracket
+    -- create pool
+    (createPool (connectPostgreSQL' (configDbUri conf))
+      disconnect 1 600 (configPool conf))
+    -- destroy pool
+    destroyAllResources
+    (\pool -> do
+      let port = configPort conf
+      Prelude.putStrLn $ "Listening on port " ++ (show $ configPort conf :: String)
+      let tls = tlsSettings (configSslCert conf) (configSSlKey conf)
+      let settings = setPort port
+                   . setServerName (cs $ "pggres/" <> prettyVersion)
+                   $ defaultSettings
+      runTLS tls settings $ gzip def .withDBConnection pool $ app
+    )
   where
     describe = progDesc "create a REST API to an existing Postgres database"
+    prettyVersion = intercalate "." $ map show $ versionBranch version

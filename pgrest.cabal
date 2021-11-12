@@ -64,6 +64,7 @@ executable pgrest-exe
     , regex-posix
     , zlib
     , utf8-string
+    , resource-pool
   default-language: Haskell2010
 
 test-suite pgrest-test
@@ -108,6 +109,7 @@ test-suite pgrest-test
     , regex-posix
     , zlib
     , utf8-string
+    , resource-pool
   other-modules: 
         Dbapi, 
         Spec, 

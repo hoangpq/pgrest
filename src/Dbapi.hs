@@ -3,8 +3,6 @@
 module Dbapi where
 
 
-import           Control.Exception         (try)
-
 import qualified Data.ByteString.Char8     as BS
 import qualified Data.ByteString.Lazy      as BL
 import           Data.String.Conversions   (cs)
@@ -48,6 +46,7 @@ data AppConfig = AppConfig
   , configPort    :: Int
   , configSslCert :: FilePath
   , configSSlKey  :: FilePath
+  , configPool    :: Int
   }
 
 jsonContentType :: (HeaderName, BS.ByteString)
@@ -58,7 +57,7 @@ jsonBodyAction req handler = do
   parse <- jsonBody req
   case parse of
     Left err -> return $ responseLBS status400 [jsonContentType] json
-      where json = JSON.encode . JSON.object $ [("error", JSON.String $ cs err)]
+      where json = JSON.encode . JSON.object $ [("error", JSON.String $ "Failed to parse json payload" <> cs err)]
     Right body -> handler body
 
 jsonBody :: Request -> IO (Either String SqlRow)
