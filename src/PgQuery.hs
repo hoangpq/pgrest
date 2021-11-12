@@ -9,7 +9,7 @@ module PgQuery (
 
 import qualified Data.ByteString.Char8    as BS
 import qualified Data.ByteString.Lazy     as BL
-import           Data.List                (intercalate, intersperse)
+
 import           Data.Maybe               (fromMaybe)
 
 import           Database.HDBC            hiding (colNullable, colType)
@@ -23,10 +23,13 @@ import           Types                    (SqlRow, getRow, sqlRowColumns,
 import qualified Data.Map                 as Map
 
 import           Control.Monad            (join)
-import           Data.Text                (Text)
+
+import           Data.Text                (Text, intercalate)
 import           Debug.Trace
 
 import           Data.String.Conversions  (cs)
+
+import qualified Data.List                as L
 
 data RangedResult = RangedResult
   { rrFrom  :: Int,
@@ -36,8 +39,7 @@ data RangedResult = RangedResult
   } deriving Show
 
 type Schema = String
-
-type QuotedSql = (String, [SqlValue])
+type QuotedSql = (Text, [SqlValue])
 
 getRows :: Schema -> String -> Net.Query -> Maybe R.NonnegRange -> Connection -> IO RangedResult
 getRows schema table qq range conn = do
@@ -47,7 +49,7 @@ getRows schema table qq range conn = do
       (selectStarClause schema table
         <> whereClause qq
         <> limitClause range)
-  r <- quickQuery conn query []
+  r <- quickQuery conn (cs query) []
 
   return $ case r of
             [[total, _, SqlNull]] -> RangedResult offset 0 (fromSql total) ""
@@ -67,7 +69,7 @@ whereClause qs =
   if null qs then ("", []) else (" where ", []) <> conjunction
 
   where
-    conjunction = mconcat $ intersperse (" and ", []) (map wherePred qs)
+    conjunction = mconcat $ L.intersperse (" and ", []) (map wherePred qs)
 
 wherePred :: Net.QueryItem -> QuotedSql
 wherePred (column, predicate) =
@@ -117,26 +119,26 @@ upsert schema table row qq conn = do
   Just m <- fetchRowMap stmt
   return (traceShow m m)
 
-placeholders :: String -> SqlRow -> String
+placeholders :: Text -> SqlRow -> Text
 placeholders symbol = intercalate ", " . map (const symbol) . getRow
 
 insertClause :: Schema -> Text -> SqlRow -> QuotedSql
 insertClause schema table row =
-  ("insert into %I.%I (" ++ placeholders "%I" row ++ ")",
+  ("insert into %I.%I (" <> placeholders "%I" row <> ")",
     map toSql $ cs schema : table: sqlRowColumns row)
-  <> (" values (" ++ placeholders "?" row ++ ") returning *", sqlRowValues row)
+  <> (" values (" <> placeholders "?" row <> ") returning *", sqlRowValues row)
 
 insertClauseViaSelect :: Schema -> Text -> SqlRow -> QuotedSql
 insertClauseViaSelect schema table row =
-  ("insert into %I.%I (" ++ placeholders "%I" row ++ ")",
+  ("insert into %I.%I (" <> placeholders "%I" row <> ")",
     map toSql $ cs schema : table : sqlRowColumns row)
-  <> (" select " ++ placeholders "?" row, sqlRowValues row)
+  <> (" select " <> placeholders "?" row, sqlRowValues row)
 
 updateClause :: Schema -> Text -> SqlRow -> QuotedSql
 updateClause schema table row =
-  ("update %I.%I set (" ++ placeholders "%I" row ++ ")",
+  ("update %I.%I set (" <> placeholders "%I" row <> ")",
     map toSql $ cs schema : table : sqlRowColumns row)
-  <> (" = (" ++ placeholders "?" row ++ ")", [])
+  <> (" = (" <> placeholders "?" row <> ")", [])
 
 upsertClause :: Schema -> Text -> SqlRow -> Net.Query -> QuotedSql
 upsertClause schema table row qq =
@@ -147,10 +149,10 @@ upsertClause schema table row qq =
 
 populateSql :: Connection -> QuotedSql -> IO String
 populateSql conn sql = do
-  [[escaped]] <- quickQuery conn q (snd sql)
+  [[escaped]] <- quickQuery conn (cs q) (snd sql)
   return $ fromSql escaped
 
   where
-    q = concat ["select format('", fst sql, "', ", ph (snd sql), ")" ]
-    ph :: [a] -> String
+    q = mconcat [ "select format('", fst sql, "', ", ph (snd sql), ")" ]
+    ph :: [a] -> Text
     ph = intercalate ", " . map (const "?::varchar")

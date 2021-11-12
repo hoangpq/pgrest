@@ -1,0 +1,25 @@
+cradle:
+  cabal:
+    - path: "src/Main.hs"
+      component: "pgrest:exe:pgrest-exe"
+
+    - path: "src/Dbapi.hs"
+      component: "pgrest:exe:pgrest-exe"
+
+    - path: "src/Types.hs"
+      component: "pgrest:exe:pgrest-exe"
+
+    - path: "src/PgStructure.hs"
+      component: "pgrest:exe:pgrest-exe"
+
+    - path: "src/PgQuery.hs"
+      component: "pgrest:exe:pgrest-exe"
+
+    - path: "src/RangeQuery.hs"
+      component: "pgrest:exe:pgrest-exe"
+
+    - path: "test"
+      component: "pgrest:test:pgrest-test"
+
+    - path: "src"
+      component: "pgrest:test:pgrest-test"
