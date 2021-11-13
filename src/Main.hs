@@ -46,10 +46,8 @@ main = do
   conf <- execParser (info (helper <*> argParser) describe)
 
   bracket
-    -- create pool
     (createPool (connectPostgreSQL' (configDbUri conf))
       disconnect 1 600 (configPool conf))
-    -- destroy pool
     destroyAllResources
     (\pool -> do
       let port = configPort conf
