@@ -57,7 +57,7 @@ main = do
                    . setServerName (cs $ "pgrest/" <> prettyVersion)
                    $ defaultSettings
 
-      runTLS tls settings $ gzip def .withDBConnection pool $ app
+      runTLS tls settings $ gzip def . withDBConnection pool $ app
     )
   where
     describe = progDesc "create a REST API to an existing Postgres database"

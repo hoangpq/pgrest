@@ -126,8 +126,8 @@ app conn req respond =
             else do
               cols <- columns (cs table) conn
               let colNames = Set.fromList $ map (cs . colName) cols
-
               let specifiedCols = Set.fromList $ map fst $ getRow row
+
               if colNames == specifiedCols then do
                 allvals <- upsert (cs schema) table row qq conn
 
