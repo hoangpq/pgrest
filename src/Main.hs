@@ -17,11 +17,10 @@ import           Data.Pool                   (createPool, destroyAllResources)
 import           Database.HDBC               (disconnect)
 import           Middleware                  (withDBConnection)
 
-import           Paths_pgrest                (version)
-
 import           Data.List                   (intercalate)
+
 import           Data.Version                (versionBranch)
-import           System.IO                   (print)
+import           Paths_pgrest                (version)
 
 import           Data.String.Conversions     (cs)
 
@@ -57,7 +56,7 @@ main = do
       Prelude.putStrLn $ "Listening on port " ++ (show $ configPort conf :: String)
       let tls = tlsSettings (configSslCert conf) (configSSlKey conf)
       let settings = setPort port
-                   . setServerName (cs $ "pggres/" <> prettyVersion)
+                   . setServerName (cs $ "pgrest/" <> prettyVersion)
                    $ defaultSettings
       runTLS tls settings $ gzip def .withDBConnection pool $ app
     )

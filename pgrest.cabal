@@ -26,6 +26,8 @@ executable pgrest-exe
       , PgStructure
       , PgQuery
       , RangeQuery
+      , Middleware
+      , Paths_pgrest
   hs-source-dirs:
       src
   ghc-options: -Wall

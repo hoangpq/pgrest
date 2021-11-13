@@ -2,9 +2,7 @@
 module SpecHelper where
 
 import           Network.Wai               (Application)
-import           Network.Wai.Test          (SResponse)
 import           Test.Hspec                hiding (pending, pendingWith)
-import           Test.Hspec.Wai            as HW
 
 import           Database.HDBC
 import           Database.HDBC.PostgreSQL
@@ -20,8 +18,9 @@ import qualified Data.HashMap.Strict       as Map
 import           Data.CaseInsensitive
 import           Text.Regex.TDFA           ((=~))
 
+
 cfg :: AppConfig
-cfg = AppConfig "postgres://postgres:@localhost:5432/dbapi_test" 9000 "test/test.crt" "test/test.key"
+cfg = AppConfig "postgres://postgres:@localhost:5432/dbapi_test" 9000 "test/test.crt" "test/test.key" 10
 
 openConnection :: IO Connection
 openConnection = connectPostgreSQL' $ configDbUri cfg

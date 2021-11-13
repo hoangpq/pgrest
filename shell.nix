@@ -3,8 +3,9 @@ let
   pgrest = pkgs.haskellPackages.callPackage ./default.nix { };
   hsTools = with pkgs.haskellPackages; [
     cabal-install hpack 
+    haskell-language-server 
     haskell-dap ghci-dap haskell-debug-adapter phoityne-vscode 
-    hlint haskell-language-server
+    hlint
   ];
 in
   pkgs.lib.overrideDerivation pgrest.env (old: {

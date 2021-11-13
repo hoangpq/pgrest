@@ -41,6 +41,8 @@ import           Network.Wai.Internal
 
 import           Data.Maybe                (isJust)
 
+import           Data.Text                 (Text, strip)
+
 data AppConfig = AppConfig
   { configDbUri   :: String
   , configPort    :: Int
@@ -85,7 +87,7 @@ app conn req respond =
       if range == Just emptyRange
         then return $ responseLBS status416 [] "HTTP Range error"
         else do
-          r <- respondWithRangedResult <$> getRows schema (cs table) qq range conn
+          r <- respondWithRangedResult <$> getRows (cs schema) (cs table) qq range conn
           -- print $ show $ lookup hRange $ responseHeaders r
           let canonical = urlEncodeVars $ sort $
                           map (join (***) cs) $
@@ -99,8 +101,8 @@ app conn req respond =
 
     ([table], "POST") ->
       jsonBodyAction req (\row -> do
-        allvals <- insert schema table row conn
-        keys <- primaryKeyColumns (cs schema) (cs table) conn
+        allvals <- insert (cs schema) table row conn
+        keys <- map cs <$> primaryKeyColumns (cs schema) (cs table) conn
 
         let params = urlEncodeVars $ map (\t -> (fst t, "eq." <> convert (snd t) :: String)) $ toList $ filterByKeys allvals keys
         return $ responseLBS status201
@@ -111,7 +113,8 @@ app conn req respond =
 
     ([table], "PUT") ->
       jsonBodyAction req (\row -> do
-        keys <- primaryKeyColumns (cs schema) (cs table) conn
+        keys <- map cs <$> primaryKeyColumns (cs schema) (cs table) conn
+
         let specifiedKeys = map (cs . fst) qq
         if Set.fromList keys /= Set.fromList specifiedKeys
           then return $ responseLBS status405 []
@@ -128,7 +131,9 @@ app conn req respond =
               if colNames == specifiedCols then do
                 allvals <- upsert (cs schema) table row qq conn
 
-                let params = urlEncodeVars $ map (\t -> (fst t, "eq." <> convert (snd t) :: String)) $ toList $ filterByKeys allvals keys
+                let params = urlEncodeVars $ map (\t -> (fst t, "eq." <> convert (snd t) :: String))
+                             $ toList $ filterByKeys allvals keys
+
                 return $ responseLBS status201
                   [jsonContentType
                   , (hLocation, "/" <> encodeUtf8 table <> "?" <> cs params)

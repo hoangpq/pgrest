@@ -9,12 +9,15 @@ import           Data.Maybe               (mapMaybe)
 import           Database.HDBC            (fromSql, quickQuery, toSql)
 import           Database.HDBC.PostgreSQL
 
-import           Data.List.Split          (splitOn)
 import           Debug.Trace
 
+import           Data.Monoid              ((<>))
+import           Data.String.Conversions  (cs)
+import           Data.Text                hiding (concat, foldl, map, zipWith)
+
 data Table = Table
-  { tableSchema     :: String,
-    tableName       :: String,
+  { tableSchema     :: Text,
+    tableName       :: Text,
     tableInsertable :: Bool
   }
   deriving (Show)
@@ -29,21 +32,21 @@ instance JSON.ToJSON Table where
       ]
 
 -- convert database bool to haskell bool
-toBool :: String -> Bool
+toBool :: Text -> Bool
 toBool = (== "YES")
 
 data Column = Column
-  { colSchema    :: String,
-    colTable     :: String,
-    colName      :: String,
+  { colSchema    :: Text,
+    colTable     :: Text,
+    colName      :: Text,
     colPosition  :: Int,
     colNullable  :: Bool,
-    colType      :: String,
+    colType      :: Text,
     colUpdatable :: Bool,
     colMaxLen    :: Maybe Int,
     colPrecision :: Maybe Int,
-    colDefault   :: Maybe String,
-    colEnum      :: Maybe [String]
+    colDefault   :: Maybe Text,
+    colEnum      :: Maybe [Text]
   }
   deriving (Show)
 
@@ -62,7 +65,7 @@ instance JSON.ToJSON Column where
         "enum" .= colEnum c
       ]
 
-tables :: String -> Connection -> IO [Table]
+tables :: Text -> Connection -> IO [Table]
 tables s conn = do
   r <-
     quickQuery
@@ -83,7 +86,7 @@ tables s conn = do
           (toBool (fromSql insertable))
     mkTable _ = Nothing
 
-columns :: String -> Connection -> IO [Column]
+columns :: Text -> Connection -> IO [Column]
 columns t conn = do
   r <-
     quickQuery
@@ -131,12 +134,12 @@ columns t conn = do
           (fromSql precision)
           (fromSql defVal)
           (splitOn "," <$> fromSql enum)
-    mkColumn _ = error $ "Incomplete column data received for table " ++
-      t ++ " in schema public."
+    mkColumn _ = error $ "Incomplete column data received for table " <>
+      cs t <> " in schema public."
 
 data TableOptions = TableOptions
   { tblOptcolumns :: [Column],
-    tblOptpkey    :: [String]
+    tblOptpkey    :: [Text]
   }
 
 instance JSON.ToJSON TableOptions where
@@ -145,19 +148,19 @@ instance JSON.ToJSON TableOptions where
       "columns" .= tblOptcolumns t
     , "pkey"    .= tblOptpkey t ]
 
-printTables :: String -> Connection -> IO BL.ByteString
+printTables :: Text -> Connection -> IO BL.ByteString
 printTables schema conn = JSON.encode <$> tables schema conn
 
-printColumns :: String -> String -> Connection -> IO BL.ByteString
+printColumns :: Text -> Text -> Connection -> IO BL.ByteString
 printColumns schema table conn =
   JSON.encode <$> (TableOptions <$> cols <*> pkey)
   where
     cols :: IO [Column]
     cols = columns table conn
-    pkey :: IO [String]
+    pkey :: IO [Text]
     pkey = primaryKeyColumns schema table conn
 
-primaryKeyColumns :: String -> String -> Connection -> IO [String]
+primaryKeyColumns :: Text -> Text -> Connection -> IO [Text]
 primaryKeyColumns s t conn = do
   r <-
     quickQuery
