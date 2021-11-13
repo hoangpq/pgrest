@@ -56,6 +56,7 @@ main = do
       let settings = setPort port
                    . setServerName (cs $ "pgrest/" <> prettyVersion)
                    $ defaultSettings
+
       runTLS tls settings $ gzip def .withDBConnection pool $ app
     )
   where
