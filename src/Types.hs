@@ -1,7 +1,5 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Types where
-import           Database.HDBC       (SqlValue (..), iToSql, toSql)
-
 
 import qualified Data.Aeson          as JSON
 import           Data.Aeson.Types    (Parser)
@@ -14,6 +12,7 @@ import           Data.Text.Encoding  (decodeUtf8)
 import           Data.Time.Calendar  (showGregorian)
 
 import           Control.Monad       (mzero)
+
 
 instance JSON.FromJSON SqlValue where
     parseJSON (JSON.Number n) = return $ either toSql iToSql (floatingOrInteger n :: Either Double Int)
