@@ -1,28 +1,21 @@
 module Main where
 
-import           Dbapi
-import           Network.Wai.Handler.Warp
+import Dbapi
+import Network.Wai.Handler.Warp
 
-import           Options.Applicative         hiding (columns)
+import Options.Applicative hiding (columns)
 
-import           Network.Wai.Handler.WarpTLS (runTLS, tlsSettings)
-import           Network.Wai.Middleware.Gzip (def, gzip)
+import Network.Wai.Handler.WarpTLS (runTLS, tlsSettings)
+import Network.Wai.Middleware.Gzip (def, gzip)
 
--- import           Control.Exception           (bracket)
+import Data.List (intercalate)
 
--- import           Data.Pool                   (createPool, destroyAllResources)
--- import           Middleware                  (withDBConnection)
+import Data.Version (versionBranch)
+import Paths_pgrest (version)
 
-import           Data.List                   (intercalate)
+import Data.String.Conversions (cs)
 
-import           Data.Version                (versionBranch)
-import           Paths_pgrest                (version)
-
-import           Data.String.Conversions     (cs)
-
-
-import qualified Hasql.Connection            as HC
--- import qualified Hasql.Session               as H
+import qualified Hasql.Connection as HC
 
 argParser :: Parser AppConfig
 argParser =
@@ -57,15 +50,12 @@ main = do
   dbConn <- HC.acquire defaultDbSettings
 
   case dbConn of
-    Left err -> putStrLn $ "Error: " ++ (show err)
+    Left err -> putStrLn $ "Error: " ++ show err
     Right conn -> do
       let settings = setPort port . setServerName (cs $ "pgrest/" <> prettyVersion) $ defaultSettings
-
-      putStrLn "Connected to database"
-      putStrLn "Starting server"
-
       runTLS tls settings $ gzip def $ app conn
 
   where
     describe = progDesc "create a REST API to an existing Postgres database"
     prettyVersion = intercalate "." $ map show $ versionBranch version
+
